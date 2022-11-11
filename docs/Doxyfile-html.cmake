@@ -50,7 +50,7 @@ TYPEDEF_HIDES_STRUCT   = NO
 # Build related configuration options
 #---------------------------------------------------------------------------
 EXTRACT_ALL            = YES
-EXTRACT_PRIVATE        = NO
+EXTRACT_PRIVATE        = YES
 EXTRACT_STATIC         = YES
 EXTRACT_LOCAL_CLASSES  = YES
 EXTRACT_LOCAL_METHODS  = YES
@@ -77,7 +77,7 @@ MAX_INITIALIZER_LINES  = 30
 SHOW_USED_FILES        = YES
 #SHOW_DIRECTORIES       = NO
 SHOW_FILES             = YES
-SHOW_NAMESPACES        = YES
+SHOW_NAMESPACES        = NO
 FILE_VERSION_FILTER    = 
 #---------------------------------------------------------------------------
 # configuration options related to warning and progress messages

@@ -1,7 +1,7 @@
 # Settings
 cmake_minimum_required(VERSION 3.13)
 
-set(LIB_NAME arkulib)
+set(LIB_NAME Arkulib)
 project(${LIB_NAME} LANGUAGES C CXX)
 
 # Get source & header files
