@@ -1,3 +1,5 @@
-int main() {
-    return 0;
+#include "test.hpp"
+
+int renvoie2() {
+    return 2;
 }

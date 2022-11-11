@@ -1,32 +1,29 @@
 # Settings
-cmake_minimum_required(VERSION 3.11)
-project(arkulib)
+cmake_minimum_required(VERSION 3.13)
 
-# Create executable
-set(TARGET_NAME ${PROJECT_NAME})
-add_executable(${TARGET_NAME})
+set(LIB_NAME arkulib)
+project(${LIB_NAME} LANGUAGES C CXX)
 
-# Get source files
-file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS "src/*")
+# Get source & header files
+file(GLOB_RECURSE SRC_FILES src/*.cpp)
+file(GLOB_RECURSE HEADER_FILES include/*.hpp)
 
-# Find Doxygen and add docs
-find_package(Doxygen)
+# Find doxygen package (optional)
+find_package(Doxygen OPTIONAL_COMPONENTS QUIET)
 if(DOXYGEN_FOUND)
     add_subdirectory(docs)
 else()
-    message(WARNING "Doxygen is not found !")
+    message(WARNING "Doxygen is not found")
 endif()
 
-# Link files to project target
-target_sources(${TARGET_NAME} PRIVATE ${SRC_FILES})
-target_include_directories(${TARGET_NAME} PRIVATE "src/")
+# Create the lib
+add_library(${LIB_NAME} ${SRC_FILES} ${HEADER_FILES})
 
-# Enable C++17
-set_target_properties(${TARGET_NAME} PROPERTIES
-        CXX_STANDARD 17
-        CXX_STANDARD_REQUIRED YES
-        CXX_EXTENSIONS NO
-)
+# Compilation settings
+target_compile_features(${LIB_NAME} PRIVATE cxx_std_17)
+target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic -pedantic-errors -O2)
 
-# Enable good warnings
-target_compile_options(${TARGET_NAME} PRIVATE -Wall -Wextra -Wpedantic -pedantic-errors -O2)
+# Include directories
+target_include_directories(${LIB_NAME} PRIVATE "include")
+
+
