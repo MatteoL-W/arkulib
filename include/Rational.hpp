@@ -7,17 +7,9 @@
  * @copyright WTFPL
  */
 
-#include <stdexcept>
+#include "Exceptions/DivideByZeroException.hpp"
 
 namespace Arkulib {
-    /**
-     * @brief An exception to handle divide by 0
-     */
-    class DivideByZeroException : public std::runtime_error {
-    public:
-        inline DivideByZeroException() : std::runtime_error("Denominator must not be null") {}
-    };
-
     /**
      * @brief This class can be used to express rationals
      * @tparam T
@@ -37,20 +29,52 @@ namespace Arkulib {
                 throw DivideByZeroException();
             }
             // Faire pgcd
+            // numerator ne doit pas être négatif
         };
 
         /**
-         * @defgroup constant_methods Methods which returns constants
          * @brief Return a zero constant rational
          * @return Rational<T>
          */
-        inline constexpr Rational<T> Zero() { return Rational<T>(0, 1); };
+        inline constexpr Rational<T> Zero() noexcept { return Rational<T>(0, 1); };
 
         /**
          * @brief Return infinite constant rational
          * @return Rational<T>
          */
-        inline constexpr Rational<T> Infinite() { return Rational<T>(1, 0); };
+        inline constexpr Rational<T> Infinite() noexcept { return Rational<T>(1, 0); };
+
+        /**
+         * @brief [WIP->Is It Useful?] Get the integer of the ratio
+         * @return An int (type T)
+         */
+        inline constexpr T toInteger() noexcept {
+            return T(m_numerator / m_denominator);
+        }
+
+        /**
+         * @brief [WIP] Get an approximation floating point number of the ratio
+         * @tparam U
+         * @return A floating point number (type U)
+         */
+        template<typename U = float>
+        inline constexpr U toFloat() noexcept {
+            return U(m_numerator / m_denominator);
+        }
+
+        /**
+         * @brief A method who automatically set numerator / denominator to approach the parameter float
+         * @tparam U
+         * @param floatingRatio
+         */
+        template<typename U = float>
+        void fromFloat(U floatingRatio, unsigned int iter);
+
+        /**
+         * @brief Simplify the Rational with GCD (called in constructor)
+         * @param ratio
+         */
+        void simplify();
 
     private:
         T m_numerator; /*!< Rational's numerator */
@@ -58,5 +82,16 @@ namespace Arkulib {
         T m_denominator; /*!< Rational's denominator */
 
     };
+
+    template<typename T>
+    template<typename U>
+    void Rational<T>::fromFloat(U floatingRatio, unsigned int) {
+        //ToDo
+    }
+
+    template<typename T>
+    void Rational<T>::simplify() {
+        //ToDo
+    }
 
 }
