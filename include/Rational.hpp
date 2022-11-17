@@ -7,6 +7,8 @@
  * @copyright WTFPL
  */
 
+#include <cmath>
+#include <fstream>
 #include "Exceptions/DivideByZeroException.hpp"
 
 namespace Arkulib {
@@ -18,6 +20,9 @@ namespace Arkulib {
     class Rational {
 
     public:
+
+        Rational() = default;
+
         /**
          * @brief Default constructor : create a rational from a numerator and a denominator (set default at 1)
          * @param numerator
@@ -29,8 +34,15 @@ namespace Arkulib {
                 throw DivideByZeroException();
             }
             // Faire pgcd
+
             // numerator ne doit pas être négatif
         };
+
+        Rational<T> operator+(Rational<T> &r);
+        Rational<T> operator*(const Rational<T> &r);
+        Rational<T> inverse();
+        Rational<T> operator/(const Rational<T> &r);
+        Rational<T> sqrt();
 
         /**
          * @brief Return a zero constant rational
@@ -43,6 +55,9 @@ namespace Arkulib {
          * @return Rational<T>
          */
         inline constexpr Rational<T> Infinite() noexcept { return Rational<T>(1, 0); };
+
+        inline T getNumerator(){ return m_numerator; };
+        inline T getDenominator(){ return m_denominator; };
 
         /**
          * @brief [WIP->Is It Useful?] Get the integer of the ratio
@@ -93,5 +108,49 @@ namespace Arkulib {
     void Rational<T>::simplify() {
         //ToDo
     }
+
+    template<typename T>
+    Rational<T> Rational<T>::operator+(Rational<T> &r){
+        Rational<T> result;
+        result.m_numerator = m_numerator * r.getDenominator() + m_denominator * r.getNumerator();
+        result.m_denominator = m_denominator * r.getDenominator();
+        return result;
+    }
+
+    template<typename T>
+    Rational<T> Rational<T>::operator*(const Rational<T> &r){
+        Rational<T> result;
+        result.m_numerator = m_numerator * r.m_numerator;
+        result.m_denominator = m_denominator * r.m_denominator;
+        return result;
+    }
+
+    template<typename T>
+    Rational<T> Rational<T>::inverse(){
+        Rational<T> result;
+        result.m_numerator = m_denominator;
+        result.m_denominator = m_numerator;
+        return result;
+    }
+
+    template<typename T>
+    Rational<T> Rational<T>::operator/(const Rational<T> &r){
+        Rational<T> result;
+        result.m_numerator = m_numerator * r.m_denominator;
+        result.m_denominator = m_denominator * r.m_numerator;
+        return result;
+    }
+
+    /*
+    template<typename T>
+    Rational<T> Rational<T>::sqrt(){
+        Rational<T> result;
+        //ToDo exception if f is negative
+    }*/
+}
+template<typename T>
+std::ostream& operator<< (std::ostream& stream, Arkulib::Rational<T>& r){
+    stream << "(" << r.getNumerator() << "/" << r.getDenominator() << ")";
+    return stream;
 
 }
