@@ -151,7 +151,7 @@ EXCLUDE_SYMBOLS        =
 EXAMPLE_PATH           =
 EXAMPLE_PATTERNS       = *
 EXAMPLE_RECURSIVE      = NO
-IMAGE_PATH             = @Arkulib_SOURCE_DIR@/doc/images/
+IMAGE_PATH             = @Arkulib_SOURCE_DIR@/docs/images/
 INPUT_FILTER           = 
 FILTER_PATTERNS        = 
 FILTER_SOURCE_FILES    = NO
@@ -170,7 +170,6 @@ VERBATIM_HEADERS       = NO
 # configuration options related to the alphabetical class index
 #---------------------------------------------------------------------------
 ALPHABETICAL_INDEX     = YES
-COLS_IN_ALPHA_INDEX    = 5
 IGNORE_PREFIX          = 
 #---------------------------------------------------------------------------
 # configuration options related to the HTML output
@@ -270,10 +269,8 @@ EXTERNAL_GROUPS        = YES
 #---------------------------------------------------------------------------
 # Configuration options related to the dot tool   
 #---------------------------------------------------------------------------
-CLASS_DIAGRAMS         = NO 
 HIDE_UNDOC_RELATIONS   = NO
-HAVE_DOT               = NO 
-DOT_FONTNAME           = Helvetica #FreeSans
+HAVE_DOT               = NO
 DOT_FONTPATH           = 
 CLASS_GRAPH            = YES
 COLLABORATION_GRAPH    = YES
@@ -291,7 +288,6 @@ DOT_PATH               = ${DOXYGEN_DOT_PATH} # this option is for mac, else leav
 DOTFILE_DIRS           = 
 DOT_GRAPH_MAX_NODES    = 50
 MAX_DOT_GRAPH_DEPTH    = 1000
-DOT_TRANSPARENT        = YES
 DOT_MULTI_TARGETS      = NO
 GENERATE_LEGEND        = YES
 DOT_CLEANUP            = YES
