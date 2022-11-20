@@ -21,6 +21,11 @@ namespace Arkulib {
     class Rational {
 
     public:
+
+        /************************************************************************************************************
+         ****************************************** CONSTRUCTOR / DESTRUCTOR ****************************************
+         ************************************************************************************************************/
+
         /**
          * @brief Default constructor : instantiate an object without parameters.
          */
@@ -38,7 +43,7 @@ namespace Arkulib {
             }
 
             simplify();
-            // numerator ne doit pas être négatif
+            // ToDo numerator ne doit pas être négatif
         };
 
         /**
@@ -47,25 +52,121 @@ namespace Arkulib {
          */
         inline constexpr Rational(const Rational<T> &reference) = default;
 
+        // ToDo Faire un constructeur à partir d'un float
+
         /**
          * @brief Default Destructor
          */
         inline ~Rational() = default;
 
+        /************************************************************************************************************
+         ************************************************ GETTERS ***************************************************
+         ************************************************************************************************************/
+
+        inline T getNumerator() const noexcept { return m_numerator; }
+
+        inline T getDenominator() const noexcept { return m_denominator; }
+
+        /************************************************************************************************************
+         *********************************************** OPERATOR + *************************************************
+         ************************************************************************************************************/
+
+        /**
+         * @brief Addition operation between 2 rationals
+         * @param anotherRational
+         * @return The sum in Rational
+         */
+        Rational<T> operator+(const Rational<T> &anotherRational);
+
+        /**
+         * @brief Addition operation between a rational and another type. Example: Rational + int
+         * @tparam U
+         * @param nonRational
+         * @return The sum in Rational
+         */
         template<typename U>
-        Rational<T> operator+(const U &f);
+        inline Rational<T> operator+(const U &nonRational) { return Rational(nonRational) + *this; }
 
-        Rational<T> operator+(const Rational<T> &r);
+        /**
+         * @brief Addition operation between a non-rational and a rational. Example: int + Rational
+         * @tparam U
+         * @param nonRational
+         * @param rational
+         * @return The sum in Rational
+         */
+        template<typename U>
+        inline friend Rational<T> operator+(U nonRational, const Rational<T> &rational) {
+            return Rational(nonRational) + rational;
+        };
 
-        Rational<T> operator-(const Rational<T> &r);
+        /************************************************************************************************************
+         *********************************************** OPERATOR - *************************************************
+         ************************************************************************************************************/
 
-        Rational<T> operator*(const Rational<T> &r);
+        Rational<T> operator-(const Rational<T> &anotherRational);
 
-        Rational<T> operator/(const Rational<T> &r);
+        /************************************************************************************************************
+         *********************************************** OPERATOR * *************************************************
+         ************************************************************************************************************/
+
+        Rational<T> operator*(const Rational<T> &anotherRational);
+
+        /************************************************************************************************************
+         *********************************************** OPERATOR / *************************************************
+         ************************************************************************************************************/
+
+        Rational<T> operator/(const Rational<T> &anotherRational);
+
+        /************************************************************************************************************
+         ********************************************** OPERATOR == *************************************************
+         ************************************************************************************************************/
+
+        /**
+         * @brief Comparison between 2 rationals
+         * @param anotherRational
+         * @return True if the first rational is equal to the second
+         */
+        inline bool operator==(const Rational<T> &anotherRational) {
+            return (m_numerator * m_denominator) == (anotherRational.m_numerator * anotherRational.m_denominator);
+        }
+
+        /**
+         * @brief Comparison between a rational and a non-rational. Example: Rational == int
+         * @tparam U
+         * @param nonRational
+         * @return True if the rational is equal to the second operand
+         */
+        template<typename U>
+        inline bool operator==(const U &nonRational) { return Rational(nonRational) == *this; }
+
+        /**
+         * @brief Comparison between a non-rational and a rational. Example: int == Rational
+         * @tparam U
+         * @param nonRational
+         * @param rational
+         * @return True if the non-rational is equal to the rational
+         */
+        template<typename U>
+        inline friend bool operator==(U nonRational, const Rational<T> &rational) {
+            return Rational(nonRational) == rational;
+        };
+
+        /************************************************************************************************************
+         ************************************************* MATHS ****************************************************
+         ************************************************************************************************************/
 
         Rational<T> inverse();
 
         Rational<T> sqrt();
+
+        /**
+         * @brief Simplify the Rational with GCD (called in constructor)
+         */
+        void simplify() noexcept;
+
+        /************************************************************************************************************
+         ************************************************* STATIC ***************************************************
+         ************************************************************************************************************/
 
         /**
          * @brief Return a zero constant rational
@@ -79,9 +180,9 @@ namespace Arkulib {
          */
         inline constexpr static Rational<T> Infinite() noexcept { return Rational<T>(1, 0); }
 
-        inline T getNumerator() const noexcept { return m_numerator; }
-
-        inline T getDenominator() const noexcept { return m_denominator; }
+        /************************************************************************************************************
+         *********************************************** CONVERSION *************************************************
+         ************************************************************************************************************/
 
         /**
          * @brief Get the integer part of the ratio
@@ -106,7 +207,7 @@ namespace Arkulib {
         }
 
         /**
-         * @brief A method who automatically set numerator and denominator to approach the parameter float
+         * @brief A method who automatically set numerator and denominator to approach the float parameter
          * @tparam U
          * @param floatingRatio
          * @param iter
@@ -115,62 +216,78 @@ namespace Arkulib {
         template<typename U = float>
         Rational<T> fromFloat(U floatingRatio, size_t iter) const noexcept;
 
-        /**
-         * @brief Simplify the Rational with GCD (called in constructor)
-         */
-        void simplify() noexcept;
-
     private:
+        /************************************************************************************************************
+         ********************************************* MEMBERS ******************************************************
+         ************************************************************************************************************/
+
         T m_numerator; /*!< Rational's numerator */
 
         T m_denominator; /*!< Rational's denominator */
 
     };
 
+    /************************************************************************************************************
+     ******************************************* STD::COUT OVERRIDE *********************************************
+     ************************************************************************************************************/
+
     template<typename T>
     std::ostream &operator<<(std::ostream &stream, Arkulib::Rational<T> &r) {
         return stream << r.toString();
     }
 
+    /************************************************************************************************************
+     ********************************************* OPERATOR + DEF ***********************************************
+     ************************************************************************************************************/
+
     template<typename T>
-    Rational<T> Rational<T>::operator+(const Rational<T> &r) {
+    Rational<T> Rational<T>::operator+(const Rational<T> &anotherRational) {
         //ToDo Faire pareil pour les autres opérateurs
         return Rational<T>(
-                m_numerator * r.m_denominator + m_denominator * r.m_numerator,
-                m_denominator * r.m_denominator
+                m_numerator * anotherRational.m_denominator + m_denominator * anotherRational.m_numerator,
+                m_denominator * anotherRational.m_denominator
         );
     }
 
-    template<typename T>
-    template<typename U>
-    Rational<T> Rational<T>::operator+(const U &f) {
-        //ToDo Faire pareil pour les autres opérateurs mais pas tout de suite :)
-        return Rational(f) + *this;
-    }
+    /************************************************************************************************************
+     ********************************************* OPERATOR - DEF ***********************************************
+     ************************************************************************************************************/
 
     template<typename T>
-    Rational<T> Rational<T>::operator-(const Rational<T> &r) {
+    Rational<T> Rational<T>::operator-(const Rational<T> &anotherRational) {
         Rational<T> result;
-        result.m_numerator = m_numerator * r.m_denominator - m_denominator * r.m_numerator;
-        result.m_denominator = m_denominator * r.m_denominator;
+        result.m_numerator = m_numerator * anotherRational.m_denominator - m_denominator * anotherRational.m_numerator;
+        result.m_denominator = m_denominator * anotherRational.m_denominator;
         return result;
     }
 
+    /************************************************************************************************************
+     ********************************************* OPERATOR * DEF ***********************************************
+     ************************************************************************************************************/
+
     template<typename T>
-    Rational<T> Rational<T>::operator*(const Rational<T> &r) {
+    Rational<T> Rational<T>::operator*(const Rational<T> &anotherRational) {
         Rational<T> result;
-        result.m_numerator = m_numerator * r.m_numerator;
-        result.m_denominator = m_denominator * r.m_denominator;
+        result.m_numerator = m_numerator * anotherRational.m_numerator;
+        result.m_denominator = m_denominator * anotherRational.m_denominator;
         return result;
     }
 
+    /************************************************************************************************************
+     ********************************************* OPERATOR / DEF ***********************************************
+     ************************************************************************************************************/
+
     template<typename T>
-    Rational<T> Rational<T>::operator/(const Rational<T> &r) {
+    Rational<T> Rational<T>::operator/(const Rational<T> &anotherRational) {
         Rational<T> result;
-        result.m_numerator = m_numerator * r.m_denominator;
-        result.m_denominator = m_denominator * r.m_numerator;
+        result.m_numerator = m_numerator * anotherRational.m_denominator;
+        result.m_denominator = m_denominator * anotherRational.m_numerator;
         return result;
     }
+
+    /************************************************************************************************************
+     ************************************************ MATHS DEF *************************************************
+     ************************************************************************************************************/
 
     template<typename T>
     Rational<T> Rational<T>::inverse() {
@@ -188,9 +305,19 @@ namespace Arkulib {
     }*/
 
     template<typename T>
+    void Rational<T>::simplify() noexcept {
+        //ToDo: avec std::gcd
+    }
+
+    /************************************************************************************************************
+     ********************************************** CONVERSION DEF **********************************************
+     ************************************************************************************************************/
+
+    template<typename T>
     template<typename U>
     Rational<T> Rational<T>::fromFloat(const U floatingRatio, const size_t iter) const noexcept {
         //ToDo: Trouver un moyen de pas utiliser de paramètres iter
+        //ToDo: si c'est négatif
 
         const float threshold = 0.01;
         if (floatingRatio <= 0 + threshold || iter == 0) {
@@ -207,11 +334,6 @@ namespace Arkulib {
         }
 
         //ToDo: Throw exception here
-    }
-
-    template<typename T>
-    void Rational<T>::simplify() noexcept {
-        //ToDo: avec std::gcd
     }
 
 }

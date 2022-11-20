@@ -23,6 +23,9 @@ add_library(${LIB_NAME} ${SRC_FILES} ${HEADER_FILES})
 target_compile_features(${LIB_NAME} PRIVATE cxx_std_17)
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic -pedantic-errors -O2)
 
+# Fetch Unit Tests
+add_subdirectory(tests)
+
 # Include directories
 target_include_directories(${LIB_NAME} PRIVATE "include")
 
