@@ -10,6 +10,8 @@
 #include <cmath>
 #include <fstream>
 #include <iostream>
+#include <numeric>
+
 #include "Exceptions/DivideByZeroException.hpp"
 
 namespace Arkulib {
@@ -42,8 +44,12 @@ namespace Arkulib {
                 throw DivideByZeroException();
             }
 
+            if (denominator < 0) {
+                m_numerator = -m_numerator;
+                m_denominator = -m_denominator;
+            }
+
             simplify();
-            // ToDo numerator ne doit pas être négatif
         };
 
         /**
@@ -228,15 +234,6 @@ namespace Arkulib {
     };
 
     /************************************************************************************************************
-     ******************************************* STD::COUT OVERRIDE *********************************************
-     ************************************************************************************************************/
-
-    template<typename T>
-    std::ostream &operator<<(std::ostream &stream, Arkulib::Rational<T> &r) {
-        return stream << r.toString();
-    }
-
-    /************************************************************************************************************
      ********************************************* OPERATOR + DEF ***********************************************
      ************************************************************************************************************/
 
@@ -306,7 +303,10 @@ namespace Arkulib {
 
     template<typename T>
     void Rational<T>::simplify() noexcept {
-        //ToDo: avec std::gcd
+        int gcd = std::gcd(m_numerator, m_denominator);
+
+        m_denominator /= gcd;
+        m_numerator /= gcd;
     }
 
     /************************************************************************************************************
@@ -334,6 +334,16 @@ namespace Arkulib {
         }
 
         //ToDo: Throw exception here
+    }
+
+
+    /************************************************************************************************************
+     ******************************************* STD::COUT OVERRIDE *********************************************
+     ************************************************************************************************************/
+
+    template<typename T>
+    std::ostream &operator<<(std::ostream &stream, const Arkulib::Rational<T> &rational) {
+        return stream << rational.toString();
     }
 
 }
