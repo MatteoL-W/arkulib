@@ -109,6 +109,11 @@ namespace Arkulib {
          *********************************************** OPERATOR - *************************************************
          ************************************************************************************************************/
 
+        /**
+         * @brief Subtraction operation between 2 rationals
+         * @param anotherRational
+         * @return The subtraction in Rational
+         */
         Rational<T> operator-(const Rational<T> &anotherRational);
 
 
@@ -138,6 +143,11 @@ namespace Arkulib {
          *********************************************** OPERATOR * *************************************************
          ************************************************************************************************************/
 
+        /**
+         * @brief Subtraction operation between 2 rationals
+         * @param anotherRational
+         * @return The subtraction in Rational
+         */
         Rational<T> operator*(const Rational<T> &anotherRational);
 
         /**
