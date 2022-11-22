@@ -111,6 +111,30 @@ namespace Arkulib {
 
         Rational<T> operator-(const Rational<T> &anotherRational);
 
+
+        /**
+         * @brief Subtraction operation between a rational and another type. Example: Rational - int
+         * @tparam U
+         * @param nonRational
+         * @return The subtraction in Rational
+         */
+        template<typename U>
+        inline Rational<T> operator-(const U &nonRational) { return *this - Rational(nonRational); }
+
+        /**
+         * @brief Subtraction operation between a non-rational and a rational. Example: int - Rational
+         * @tparam U
+         * @param nonRational
+         * @param rational
+         * @return The subtraction in Rational
+         */
+        template<typename U>
+        inline friend Rational<T> operator-(U nonRational, const Rational<T> &rational) {
+            return Rational(nonRational) - rational;
+        };
+
+
+
         /************************************************************************************************************
          *********************************************** OPERATOR * *************************************************
          ************************************************************************************************************/
