@@ -244,8 +244,16 @@ namespace Arkulib {
          ************************************************* MATHS ****************************************************
          ************************************************************************************************************/
 
+        /**
+         * @brief Inverse a rationnal : a / b into b / a
+         * @return The inverted Rational
+         */
         Rational<T> inverse();
 
+        /**
+        * @brief Give the square root of a rational
+        * @return The the square root as a Rational
+        */
         Rational<T> sqrt();
 
         /**
@@ -371,18 +379,28 @@ namespace Arkulib {
 
     template<typename T>
     Rational<T> Rational<T>::inverse() {
-        Rational<T> result;
-        result.m_numerator = m_denominator;
-        result.m_denominator = m_numerator;
-        return result;
+        return Rational <T>(
+                m_denominator,
+                m_numerator
+        );
     }
 
-    /*
+
     template<typename T>
     Rational<T> Rational<T>::sqrt(){
-        Rational<T> result;
-        //ToDo exception if f is negative
-    }*/
+
+         /*
+        if(m_numerator || m_denominator < 0){
+            std::runtime_error("Rational must be positive for sqrt to be applied");
+        }*/
+         Rational<T> result;
+
+         const size_t iter = 10000;
+         result = result.fromFloat(std::sqrt(m_numerator/m_denominator), iter);
+         //ToDo correct fromFloat
+         return result;
+
+    }
 
     template<typename T>
     void Rational<T>::simplify() noexcept {
@@ -408,7 +426,7 @@ namespace Arkulib {
         }
 
         if (floatingRatio < 1) {
-            return fromFloat(1 / floatingRatio, iter).inverse();
+            return fromFloat(1. / floatingRatio, iter).inverse();
         }
 
         if (floatingRatio >= 1) {
