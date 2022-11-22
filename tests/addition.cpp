@@ -58,7 +58,7 @@ TEST (ArkulibPlusOperation, RationalsAndOne) {
 TEST (ArkulibPlusOperation, BigRationals) {
     Arkulib::Rational r1(1000, 3);
     Arkulib::Rational r2(3000,2999);
-    std::cout << (r1 + r2);
+    //std::cout << (r1 + r2);
 
     bool shouldBeEqualToTrue = (r1 + r2) == Arkulib::Rational(3008000,8997);
     ASSERT_EQ (shouldBeEqualToTrue, true);
