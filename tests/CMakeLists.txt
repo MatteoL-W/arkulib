@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
 
 enable_testing()
-add_executable(arkulib_tests subtraction.cpp)
+add_executable(arkulib_tests subtraction.cpp multiplication.cpp)
 
 # Get source files
 file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS "./*")
