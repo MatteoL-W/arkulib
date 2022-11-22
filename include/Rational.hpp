@@ -144,9 +144,9 @@ namespace Arkulib {
          ************************************************************************************************************/
 
         /**
-         * @brief Subtraction operation between 2 rationals
+         * @brief Multiplication operation between 2 rationals
          * @param anotherRational
-         * @return The subtraction in Rational
+         * @return The multiplication in Rational
          */
         Rational<T> operator*(const Rational<T> &anotherRational);
 
@@ -175,8 +175,36 @@ namespace Arkulib {
         /************************************************************************************************************
          *********************************************** OPERATOR / *************************************************
          ************************************************************************************************************/
-
+        /**
+         * @brief Division operation between 2 rationals
+         * @param anotherRational
+         * @return The division in Rational
+         */
         Rational<T> operator/(const Rational<T> &anotherRational);
+
+
+        /**
+         * @brief Division operation between a rational and another type. Example: Rational / int
+         * @tparam U
+         * @param nonRational
+         * @return The division in Rational
+         */
+        template<typename U>
+        inline Rational<T> operator/(const U &nonRational) { return *this / Rational(nonRational); }
+
+        /**
+         * @brief Division operation between a non-rational and a rational. Example: int / Rational
+         * @tparam U
+         * @param nonRational
+         * @param rational
+         * @return The division in Rational
+         */
+
+        template<typename U>
+        inline friend Rational<T> operator/(U nonRational, const Rational<T> &rational) {
+            return Rational(nonRational) / rational;
+        }
+
 
         /************************************************************************************************************
          ********************************************** OPERATOR == *************************************************
