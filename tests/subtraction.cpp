@@ -28,16 +28,13 @@ TEST (ArkulibMinusOperation, ConsecutiveRationalsOperation) {
     ASSERT_EQ (shouldBeEqualToTrue, true);
 }
 
-//ERROR : 16/16 =/ 1
-/*
 TEST (ArkulibMinusOperation, RationalsThenSimplify) {
     Arkulib::Rational r1(7,4);
     Arkulib::Rational r2(3,4);
-    std::cout << (r1 - r2);
 
     bool shouldBeEqualToTrue = (r1 - r2) == 1;
     ASSERT_EQ (shouldBeEqualToTrue, true);
-}*/
+}
 
 TEST (ArkulibMinusOperation, RationalsAndZero) {
     Arkulib::Rational r1(0);
@@ -62,15 +59,7 @@ TEST (ArkulibMinusOperation, RationalsAndOne) {
 TEST (ArkulibMinusOperation, BigRationals) {
     Arkulib::Rational r1(5000, 4);
     Arkulib::Rational r2(2000,1999);
-    //std::cout << (r1 - r2);
 
     bool shouldBeEqualToTrue = (r1 - r2) == Arkulib::Rational(2496750,1999);
     ASSERT_EQ (shouldBeEqualToTrue, true);
 }
-
-/*
-int main(int argc, char **argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}
-*/

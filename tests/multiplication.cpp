@@ -19,29 +19,22 @@ TEST (ArkulibTimeOperation, ConsecutiveRationalsOperation) {
     bool shouldBeEqualToTrue = r5 == Arkulib::Rational(8,15);
     ASSERT_EQ (shouldBeEqualToTrue, true);
 
-
     r5 = r5 * r3;
     shouldBeEqualToTrue = r5 == Arkulib::Rational(-8,135);
     ASSERT_EQ (shouldBeEqualToTrue, true);
 
-    /*
     r5 = r5 * r4;
-    std::cout << r5; //-48/945
-    shouldBeEqualToTrue = r5 == Arkulib::Rational(-16,315); //NE MARCHE PAS PCQ SIMPLIFY NE MARCHE PAS JE PENSE
+    shouldBeEqualToTrue = r5 == Arkulib::Rational(-16,315);
     ASSERT_EQ (shouldBeEqualToTrue, true);
-     */
-
 }
 
-//ERROR : IDEM QUE SUBTRACT ???
-/*
 TEST (ArkulibTimeOperation, RationalsThenSimplify) {
     Arkulib::Rational r1(4,7);
     Arkulib::Rational r2(7,4);
 
     bool shouldBeEqualToTrue = (r1 * r2) == 1;
     ASSERT_EQ (shouldBeEqualToTrue, true);
-}*/
+}
 
 TEST (ArkulibTimeOperation, RationalsAndZero) {
     Arkulib::Rational r1(0);
@@ -65,7 +58,6 @@ TEST (ArkulibTimeOperation, RationalsAndOne) {
 TEST (ArkulibTimeOperation, BigRationals) {
     Arkulib::Rational r1(1450, 2);
     Arkulib::Rational r2(305,2869);
-    //std::cout << (r1 + r2);
 
     bool shouldBeEqualToTrue = (r1 * r2) == Arkulib::Rational(221125,2869);
     ASSERT_EQ (shouldBeEqualToTrue, true);

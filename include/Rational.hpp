@@ -116,7 +116,6 @@ namespace Arkulib {
          */
         Rational<T> operator-(const Rational<T> &anotherRational);
 
-
         /**
          * @brief Subtraction operation between a rational and another type. Example: Rational - int
          * @tparam U
@@ -133,7 +132,6 @@ namespace Arkulib {
          * @param rational
          * @return The subtraction in Rational
          */
-
         template<typename U>
         inline friend Rational<T> operator-(U nonRational, const Rational<T> &rational) {
             return Rational(nonRational) - rational;
@@ -175,13 +173,13 @@ namespace Arkulib {
         /************************************************************************************************************
          *********************************************** OPERATOR / *************************************************
          ************************************************************************************************************/
+
         /**
          * @brief Division operation between 2 rationals
          * @param anotherRational
          * @return The division in Rational
          */
         Rational<T> operator/(const Rational<T> &anotherRational);
-
 
         /**
          * @brief Division operation between a rational and another type. Example: Rational / int
@@ -199,7 +197,6 @@ namespace Arkulib {
          * @param rational
          * @return The division in Rational
          */
-
         template<typename U>
         inline friend Rational<T> operator/(U nonRational, const Rational<T> &rational) {
             return Rational(nonRational) / rational;
@@ -216,6 +213,7 @@ namespace Arkulib {
          * @return True if the first rational is equal to the second
          */
         inline bool operator==(const Rational<T> &anotherRational) {
+            // ToDo: Gérer les multiples ?
             return (m_numerator * m_denominator) == (anotherRational.m_numerator * anotherRational.m_denominator);
         }
 
@@ -245,10 +243,10 @@ namespace Arkulib {
          ************************************************************************************************************/
 
         /**
-         * @brief Inverse a rationnal : a / b into b / a
+         * @brief Inverse a rational : a / b into b / a
          * @return The inverted Rational
          */
-        Rational<T> inverse();
+        inline Rational<T> inverse() { return Rational<T>(m_denominator, m_numerator); }
 
         /**
         * @brief Give the square root of a rational
@@ -266,10 +264,16 @@ namespace Arkulib {
          ************************************************************************************************************/
 
         /**
-         * @brief Return a zero constant rational
+         * @brief Return zero
          * @return Rational<T>
          */
         inline constexpr static Rational<T> Zero() noexcept { return Rational<T>(0, 1); }
+
+        /**
+         * @brief Return one
+         * @return Rational<T>
+         */
+        inline constexpr static Rational<T> One() noexcept { return Rational<T>(1, 1); }
 
         /**
          * @brief Return infinite constant rational
@@ -310,7 +314,7 @@ namespace Arkulib {
          * @param iter
          * @return
          */
-        template<typename U = float>
+        template<typename U = double>
         Rational<T> fromFloat(U floatingRatio, size_t iter) const noexcept;
 
     private:
@@ -330,7 +334,6 @@ namespace Arkulib {
 
     template<typename T>
     Rational<T> Rational<T>::operator+(const Rational<T> &anotherRational) {
-        //ToDo Faire pareil pour les autres opérateurs
         return Rational<T>(
                 m_numerator * anotherRational.m_denominator + m_denominator * anotherRational.m_numerator,
                 m_denominator * anotherRational.m_denominator
@@ -343,10 +346,10 @@ namespace Arkulib {
 
     template<typename T>
     Rational<T> Rational<T>::operator-(const Rational<T> &anotherRational) {
-        Rational<T> result;
-        result.m_numerator = m_numerator * anotherRational.m_denominator - m_denominator * anotherRational.m_numerator;
-        result.m_denominator = m_denominator * anotherRational.m_denominator;
-        return result;
+        return Rational<T>(
+                m_numerator * anotherRational.m_denominator - m_denominator * anotherRational.m_numerator,
+                m_denominator * anotherRational.m_denominator
+        );
     }
 
     /************************************************************************************************************
@@ -355,10 +358,10 @@ namespace Arkulib {
 
     template<typename T>
     Rational<T> Rational<T>::operator*(const Rational<T> &anotherRational) {
-        Rational<T> result;
-        result.m_numerator = m_numerator * anotherRational.m_numerator;
-        result.m_denominator = m_denominator * anotherRational.m_denominator;
-        return result;
+        return Rational<T>(
+                m_numerator * anotherRational.m_numerator,
+                m_denominator * anotherRational.m_denominator
+        );
     }
 
     /************************************************************************************************************
@@ -367,10 +370,10 @@ namespace Arkulib {
 
     template<typename T>
     Rational<T> Rational<T>::operator/(const Rational<T> &anotherRational) {
-        Rational<T> result;
-        result.m_numerator = m_numerator * anotherRational.m_denominator;
-        result.m_denominator = m_denominator * anotherRational.m_numerator;
-        return result;
+        return Rational<T>(
+                m_numerator * anotherRational.m_denominator,
+                m_denominator * anotherRational.m_numerator
+        );
     }
 
     /************************************************************************************************************
@@ -378,28 +381,13 @@ namespace Arkulib {
      ************************************************************************************************************/
 
     template<typename T>
-    Rational<T> Rational<T>::inverse() {
-        return Rational <T>(
-                m_denominator,
-                m_numerator
-        );
-    }
-
-
-    template<typename T>
-    Rational<T> Rational<T>::sqrt(){
-
-         /*
-        if(m_numerator || m_denominator < 0){
-            std::runtime_error("Rational must be positive for sqrt to be applied");
-        }*/
-         Rational<T> result;
-
-         const size_t iter = 10000;
-         result = result.fromFloat(std::sqrt(m_numerator/m_denominator), iter);
-         //ToDo correct fromFloat
-         return result;
-
+    Rational<T> Rational<T>::sqrt() {
+        Rational<T> result;
+        //ToDo Simplify with float constructor
+        //ToDo : Do a take !
+        //Do we (keep the precision) or (simplify the operations and ease the operations)
+        result = result.fromFloat(std::sqrt(double(m_numerator) / m_denominator), 10);
+        return result;
     }
 
     template<typename T>
@@ -419,8 +407,7 @@ namespace Arkulib {
     Rational<T> Rational<T>::fromFloat(const U floatingRatio, const size_t iter) const noexcept {
         //ToDo: Trouver un moyen de pas utiliser de paramètres iter
         //ToDo: si c'est négatif
-
-        const float threshold = 0.01;
+        const double threshold = 0.01;
         if (floatingRatio <= 0 + threshold || iter == 0) {
             return Rational::Zero();
         }
@@ -429,12 +416,8 @@ namespace Arkulib {
             return fromFloat(1. / floatingRatio, iter).inverse();
         }
 
-        if (floatingRatio >= 1) {
-            T integerPart = T(floatingRatio);
-            return fromFloat(floatingRatio - integerPart, iter - 1) + integerPart;
-        }
-
-        //ToDo: Throw exception here
+        T integerPart = T(floatingRatio);
+        return fromFloat(floatingRatio - integerPart, iter - 1) + integerPart;
     }
 
 

@@ -9,18 +9,15 @@ TEST (ArkulibDivideOperation, Rationals) {
     ASSERT_EQ (shouldBeEqualToTrue, true);
 }
 
-/* ça marche pas c'est mystique
 TEST (ArkulibDivideOperation, ConsecutiveRationalsOperation) {
     Arkulib::Rational r1(4,5);
     Arkulib::Rational r2(8,3);
     Arkulib::Rational r3(17,21);
     Arkulib::Rational r4(2,3);
     Arkulib::Rational r5 = (r1 / r2);
-    std::cout << r5;
 
     bool shouldBeEqualToTrue = r5 == Arkulib::Rational(3, 10);
     ASSERT_EQ (shouldBeEqualToTrue, true);
-
 
     r5 = r5 / r3;
     shouldBeEqualToTrue = r5 == Arkulib::Rational(63,170);
@@ -29,7 +26,6 @@ TEST (ArkulibDivideOperation, ConsecutiveRationalsOperation) {
     r5 = r5 / r4;
     shouldBeEqualToTrue = r5 == Arkulib::Rational(189,340);
     ASSERT_EQ (shouldBeEqualToTrue, true);
-
 }
 
 TEST (ArkulibDivideOperation, RationalsThenSimplify) {
@@ -38,7 +34,7 @@ TEST (ArkulibDivideOperation, RationalsThenSimplify) {
 
     bool shouldBeEqualToTrue = (r1 / r2) == 1;
     ASSERT_EQ (shouldBeEqualToTrue, true);
-}*/
+}
 
 TEST (ArkulibDivideOperation, RationalsAndZero) {
     Arkulib::Rational r1(0);
@@ -47,8 +43,15 @@ TEST (ArkulibDivideOperation, RationalsAndZero) {
     bool shouldBeEqualToTrue = (r1 / r2) == Arkulib::Rational<int>::Zero();
     ASSERT_EQ (shouldBeEqualToTrue, true);
 
-    shouldBeEqualToTrue = (r1 / r1) == Arkulib::Rational<int>::Zero();
-    ASSERT_EQ (shouldBeEqualToTrue, true);
+    EXPECT_THROW({
+        try {
+            shouldBeEqualToTrue = (r1 / r1) == Arkulib::Rational<int>::Zero();
+        }
+        catch (const DivideByZeroException& e){
+            EXPECT_STREQ("Denominator must not be null", e.what());
+            throw;
+        }
+    }, DivideByZeroException);
 }
 
 TEST (ArkulibDivideOperation, RationalsAndOne) {
@@ -59,12 +62,10 @@ TEST (ArkulibDivideOperation, RationalsAndOne) {
     ASSERT_EQ (shouldBeEqualToTrue, true);
 }
 
-/* pareil
 TEST (ArkulibDivideOperation, BigRationals) {
     Arkulib::Rational r1(4560, 9);
     Arkulib::Rational r2(256,900);
-    std::cout << (r1 / r2);
 
     bool shouldBeEqualToTrue = (r1 / r2) == Arkulib::Rational(342000,192);
     ASSERT_EQ (shouldBeEqualToTrue, true);
-}*/
+}
