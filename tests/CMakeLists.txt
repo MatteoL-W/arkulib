@@ -8,7 +8,6 @@ file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS "./*")
 
 # Link files to project target
 target_sources(arkulib_tests PRIVATE ${SRC_FILES})
-include_directories(${CMAKE_SOURCE_DIR}/arkulib/include)
 target_link_libraries(arkulib_tests gtest Arkulib)
 target_compile_features(arkulib_tests PRIVATE cxx_std_17)
 
