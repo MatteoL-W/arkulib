@@ -8,10 +8,12 @@
 
 #include <stdexcept>
 
-/**
- * @brief An exception to handle divide by 0
- */
-class DivideByZeroException : public std::runtime_error {
-public:
-    inline DivideByZeroException() : std::runtime_error("Denominator must not be null") {}
-};
+namespace Arkulib::Exceptions {
+    /**
+     * @brief An exception to handle divide by 0
+     */
+    class DivideByZeroException : public std::runtime_error {
+    public:
+        inline DivideByZeroException() : std::runtime_error("Denominator must not be null") {}
+    };
+}

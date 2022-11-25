@@ -14,6 +14,7 @@
 #include <numeric>
 
 #include "Exceptions/DivideByZeroException.hpp"
+#include "Exceptions/NegativeSqrtException.hpp"
 
 namespace Arkulib {
     /**
@@ -41,9 +42,7 @@ namespace Arkulib {
          */
         inline constexpr Rational(const IntLikeType numerator, const IntLikeType denominator)
                 : m_numerator(numerator), m_denominator(denominator) {
-            if (denominator == 0) {
-                throw DivideByZeroException();
-            }
+            if (denominator == 0) throw Arkulib::Exceptions::DivideByZeroException();
 
             if (denominator < 0) {
                 m_numerator = -m_numerator;
@@ -81,6 +80,25 @@ namespace Arkulib {
         inline IntLikeType getNumerator() const noexcept { return m_numerator; }
 
         inline IntLikeType getDenominator() const noexcept { return m_denominator; }
+
+        /************************************************************************************************************
+         ************************************************* STATUS ***************************************************
+         ************************************************************************************************************/
+
+        /**
+         * @return True if the rational is negative
+         */
+        inline bool isNegative() { return m_numerator < 0; };
+
+        /**
+         * @return True if the rational is an integer
+         */
+        inline bool isInteger() { return m_denominator == 1; };
+
+        /**
+         * @return True if the rational is equal to zero
+         */
+        inline bool isZero() { return m_denominator == 0; };
 
         /************************************************************************************************************
          *********************************************** OPERATOR + *************************************************
@@ -144,6 +162,15 @@ namespace Arkulib {
         template<typename U>
         inline friend Rational<IntLikeType> operator-(U nonRational, const Rational<IntLikeType> &rational) {
             return Rational(nonRational) - rational;
+        }
+
+        /**
+         * @brief Unary operator, allow to do -Rational
+         * @param rational
+         * @return The rational in negative
+         */
+        inline friend Rational operator-(const Rational &rational) {
+            return Rational<IntLikeType>(-rational.getNumerator(), rational.getDenominator());
         }
 
         /************************************************************************************************************
@@ -221,6 +248,7 @@ namespace Arkulib {
          */
         inline bool operator==(const Rational<IntLikeType> &anotherRational) {
             // ToDo: Gérer les multiples ?
+            // + ToDo: Là (1/2) == (2/1) donc c'est grave faux
             return (m_numerator * m_denominator) == (anotherRational.m_numerator * anotherRational.m_denominator);
         }
 
@@ -246,6 +274,42 @@ namespace Arkulib {
         }
 
         /************************************************************************************************************
+         ********************************************** OPERATOR != *************************************************
+         ************************************************************************************************************/
+
+        /************************************************************************************************************
+         *********************************************** OPERATOR < *************************************************
+         ************************************************************************************************************/
+
+        /************************************************************************************************************
+         *********************************************** OPERATOR <= *************************************************
+         ************************************************************************************************************/
+
+        /************************************************************************************************************
+         *********************************************** OPERATOR > *************************************************
+         ************************************************************************************************************/
+
+        /************************************************************************************************************
+         *********************************************** OPERATOR >= *************************************************
+         ************************************************************************************************************/
+
+        /************************************************************************************************************
+         *********************************************** OPERATOR += ************************************************
+         ************************************************************************************************************/
+
+        /************************************************************************************************************
+         *********************************************** OPERATOR -= ************************************************
+         ************************************************************************************************************/
+
+        /************************************************************************************************************
+         *********************************************** OPERATOR *= ************************************************
+         ************************************************************************************************************/
+
+        /************************************************************************************************************
+         *********************************************** OPERATOR /= ************************************************
+         ************************************************************************************************************/
+
+        /************************************************************************************************************
          ************************************************* MATHS ****************************************************
          ************************************************************************************************************/
 
@@ -257,9 +321,15 @@ namespace Arkulib {
 
         /**
         * @brief Give the square root of a rational
-        * @return The the square root as a Rational
+        * @return The square root as a Rational
         */
         Rational<IntLikeType> sqrt();
+
+        //ToDo: Pow
+        //ToDo: Exp
+        //ToDo: abs
+        //ToDo: Peut-être une fonction qui permet de simplifier le rationel ? Si c'est faisable, genre qui renvoie une approximation plus simple
+        //ToDo: ...
 
         /**
          * @brief Simplify the Rational with GCD (called in constructor)
@@ -281,6 +351,12 @@ namespace Arkulib {
          * @return Rational<IntLikeType>
          */
         inline constexpr static Rational<IntLikeType> One() noexcept { return Rational<IntLikeType>(1, 1); }
+
+        /**
+         * @brief Return an approximation of pi
+         * @return Rational<IntLikeType>
+         */
+        inline constexpr static Rational<IntLikeType> Pi() noexcept { return Rational<IntLikeType>(355, 113); }
 
         /**
          * @brief Return infinite constant rational
@@ -390,7 +466,8 @@ namespace Arkulib {
     template<typename T>
     Rational<T> Rational<T>::sqrt() {
         // ToDo : Do a take !
-        // Do we (keep the precision) or (simplify the operations and ease the operations)
+        // Do we (keep the precision) or (simplify the operations in order to ease the operations)
+        if (isNegative()) throw Arkulib::Exceptions::NegativeSqrtException();
         return Rational<T>(
                 std::sqrt(double(m_numerator) / m_denominator)
         );
@@ -413,7 +490,10 @@ namespace Arkulib {
     template<typename U>
     Rational<T> Rational<T>::fromFloat(const U floatingRatio, const size_t iter) const {
         //ToDo: Trouver un moyen de pas utiliser de paramètres iter
-        //ToDo: si c'est négatif
+        if (floatingRatio < 0) {
+            return -fromFloat(-floatingRatio, iter);
+        }
+
         const double threshold = 0.01;
         if (floatingRatio <= 0 + threshold || iter == 0) {
             return Rational::Zero();

@@ -47,11 +47,11 @@ TEST (ArkulibDivideOperation, RationalsAndZero) {
         try {
             shouldBeEqualToTrue = (r1 / r1) == Arkulib::Rational<int>::Zero();
         }
-        catch (const DivideByZeroException& e){
+        catch (const Arkulib::Exceptions::DivideByZeroException& e){
             EXPECT_STREQ("Denominator must not be null", e.what());
             throw;
         }
-    }, DivideByZeroException);
+    }, Arkulib::Exceptions::DivideByZeroException);
 }
 
 TEST (ArkulibDivideOperation, RationalsAndOne) {
