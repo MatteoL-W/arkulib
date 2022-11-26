@@ -30,7 +30,6 @@ TEST (ArkulibCosineOperation, CosineAndPi) {
 
 TEST (ArkulibCosineOperation, BigRationals) {
     Arkulib::Rational r1(5000, 4);
-    std::cout << r1.cos();
 
     bool shouldBeEqualToTrue = r1.cos() == Arkulib::Rational(2507821,2673479);
     ASSERT_EQ (shouldBeEqualToTrue, true);
