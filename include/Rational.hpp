@@ -86,6 +86,11 @@ namespace Arkulib {
          ************************************************************************************************************/
 
         /**
+         * @return True if the constant is an integer
+         */
+        inline bool integer(const double k) { return k == (int) k; };
+
+        /**
          * @return True if the rational is negative
          */
         inline bool isNegative() { return m_numerator < 0; };
@@ -341,7 +346,7 @@ namespace Arkulib {
         * @brief Give the power of a rational
         * @return The power as a Rational
         */
-        Rational<IntLikeType> pow(const double k);
+        Rational<IntLikeType> pow(double k);
 
 
         //ToDo: abs
@@ -504,10 +509,24 @@ namespace Arkulib {
         );
     }
 
+    template<typename IntLikeType> //May be optimised
+    Rational<IntLikeType> Rational<IntLikeType>::pow(const double k) {
 
+        if (integer(k)){
+            Rational<IntLikeType> rationalPow;
+            rationalPow.m_numerator = std::pow(double(m_numerator), k);
+            rationalPow.m_denominator =  std::pow(double(m_denominator), k);
+            simplify();
+            return rationalPow;
+        }
 
-    template<typename T>
-    void Rational<T>::simplify() noexcept {
+        return Rational<IntLikeType>(
+                std::pow(double(m_numerator) / m_denominator, k)
+        );
+    }
+
+    template<typename IntLikeType>
+    void Rational<IntLikeType>::simplify() noexcept {
         const int gcd = std::gcd(m_numerator, m_denominator);
         assert(gcd != 0 && "GCD shouldn't be equal to 0");
 
