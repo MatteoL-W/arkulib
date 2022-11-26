@@ -325,8 +325,25 @@ namespace Arkulib {
         */
         Rational<IntLikeType> sqrt();
 
-        //ToDo: Pow
-        //ToDo: Exp
+        /**
+        * @brief Give the cosine of a rational
+        * @return The cosine as a Rational
+        */
+        Rational<IntLikeType> cos();
+
+        /**
+        * @brief Give the exponential of a rational
+        * @return The exponential as a Rational
+        */
+        Rational<IntLikeType> exp();
+
+        /**
+        * @brief Give the power of a rational
+        * @return The power as a Rational
+        */
+        Rational<IntLikeType> pow(const double k);
+
+
         //ToDo: abs
         //ToDo: Peut-être une fonction qui permet de simplifier le rationel ? Si c'est faisable, genre qui renvoie une approximation plus simple
         //ToDo: ...
@@ -463,15 +480,31 @@ namespace Arkulib {
      ************************************************ MATHS DEF *************************************************
      ************************************************************************************************************/
 
-    template<typename T>
-    Rational<T> Rational<T>::sqrt() {
+    template<typename IntLikeType>
+    Rational<IntLikeType> Rational<IntLikeType>::sqrt() {
         // ToDo : Do a take !
         // Do we (keep the precision) or (simplify the operations in order to ease the operations)
         if (isNegative()) throw Arkulib::Exceptions::NegativeSqrtException();
-        return Rational<T>(
+        return Rational<IntLikeType>(
                 std::sqrt(double(m_numerator) / m_denominator)
         );
     }
+
+    template<typename IntLikeType>
+    Rational<IntLikeType> Rational<IntLikeType>::cos() {
+        return Rational<IntLikeType>(
+                std::cos(double(m_numerator) / m_denominator)
+        );
+    }
+
+    template<typename IntLikeType>
+    Rational<IntLikeType> Rational<IntLikeType>::exp() {
+        return Rational<IntLikeType>(
+                std::exp(double(m_numerator) / m_denominator)
+        );
+    }
+
+
 
     template<typename T>
     void Rational<T>::simplify() noexcept {
