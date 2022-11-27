@@ -513,13 +513,14 @@ namespace Arkulib {
     template<typename IntLikeType> //May be optimised !!!!!!!!
     Rational<IntLikeType> Rational<IntLikeType>::pow(const double k) {
 
+        /*
         if (integer(k)){
             Rational<IntLikeType> rationalPow;
             rationalPow.m_numerator = std::pow(double(m_numerator), k);
             rationalPow.m_denominator =  std::pow(double(m_denominator), k);
             simplify();
             return rationalPow;
-        }
+        }*/
 
         return Rational<IntLikeType>(
                 std::pow(double(m_numerator) / m_denominator, k)

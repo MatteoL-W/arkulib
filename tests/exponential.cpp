@@ -6,7 +6,14 @@ TEST (ArkulibExpOperation, RationalsOfOne) {
     Arkulib::Rational r2(2,3);
     Arkulib::Rational r3(-4);
 
-    bool shouldBeEqualToTrue = r1.exp() == Arkulib::Rational(1457,536); //valeur
+    bool shouldBeEqualToTrue = r1.exp() == Arkulib::Rational(1457,536); // 2,71828
+    ASSERT_EQ (shouldBeEqualToTrue, true);
+
+    std::cout << r3.exp() << std::endl;
+    shouldBeEqualToTrue = r2.exp() == Arkulib::Rational(5420575,2783016); // 1,94773
+    ASSERT_EQ (shouldBeEqualToTrue, true);
+
+    shouldBeEqualToTrue = r3.exp() == Arkulib::Rational(112975,6168226); // 0.0183156
     ASSERT_EQ (shouldBeEqualToTrue, true);
 }
 
@@ -26,6 +33,15 @@ TEST (ArkulibExpOperation, ExponantialOfZero) {
     ASSERT_EQ (shouldBeEqualToTrue, true);
 }
 
+TEST (ArkulibExpOperation, ExponentialInverted) {
+    Arkulib::Rational r1(7, 13);
+
+    std::cout << r1.exp() << std::endl;
+
+    bool shouldBeEqualToTrue = (-r1).exp() == 1 / r1.exp();
+    ASSERT_EQ (shouldBeEqualToTrue, true);
+}
+
 TEST (ArkulibExpOperation, ExponentialTimeExponential) {
     Arkulib::Rational r1(1, 3);
     Arkulib::Rational r2(9,4);
@@ -37,10 +53,30 @@ TEST (ArkulibExpOperation, ExponentialTimeExponential) {
     ASSERT_EQ (shouldBeEqualToTrue, true);
 }
 
-TEST (ArkulibExpOperation, BigRationals) {
-    Arkulib::Rational r1(1450, 2);
-    Arkulib::Rational r2(305,2869);
 
-    bool shouldBeEqualToTrue = (r1 * r2) == Arkulib::Rational(221125,2869);
+TEST (ArkulibExpOperation, ExponentialDivideExponential) {
+    Arkulib::Rational r1(5, 4);
+    Arkulib::Rational r2(-1,6);
+    std::cout << (r1 - r2).exp() << std::endl;
+    std::cout << r1.exp() << std::endl;
+    std::cout << r2.exp() << std::endl;
+
+    bool shouldBeEqualToTrue = (r1 - r2).exp() == r1.exp() / r2.exp();
+    ASSERT_EQ (shouldBeEqualToTrue, true);
+}
+
+TEST (ArkulibExpOperation, ExponentialPowN) {
+    Arkulib::Rational r1(8, 5);
+
+    std::cout << r1.exp() << std::endl;
+
+    bool shouldBeEqualToTrue = (r1.exp()).pow(3) == (3*r1).exp();
+    ASSERT_EQ (shouldBeEqualToTrue, true);
+}
+
+TEST (ArkulibExpOperation, BigRationals) {
+    Arkulib::Rational r1(568, 134);
+
+    bool shouldBeEqualToTrue = r1.exp() == Arkulib::Rational(3235191,46667); //69,32503
     ASSERT_EQ (shouldBeEqualToTrue, true);
 }
