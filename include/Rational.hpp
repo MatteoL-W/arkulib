@@ -40,7 +40,8 @@ namespace Arkulib {
          * @param numerator
          * @param denominator
          */
-        inline constexpr Rational(const IntLikeType numerator, const IntLikeType denominator)
+        inline constexpr Rational(const IntLikeType numerator, const IntLikeType denominator,
+                                  const bool willBeReduce = true)
                 : m_numerator(numerator), m_denominator(denominator) {
             if (denominator == 0) throw Arkulib::Exceptions::DivideByZeroException();
 
@@ -49,7 +50,7 @@ namespace Arkulib {
                 m_denominator = -m_denominator;
             }
 
-            simplify();
+            if (willBeReduce) *this = simplify();
         };
 
         /**
@@ -252,10 +253,11 @@ namespace Arkulib {
          * @return True if the first rational is equal to the second
          */
         inline bool operator==(const Rational<IntLikeType> &anotherRational) {
-            // ToDo: Gérer les multiples ?
-            // + ToDo: Là (1/2) == (2/1) donc c'est grave faux
+            Rational<IntLikeType> leftRational = simplify();
+            Rational<IntLikeType> rightRational = anotherRational.simplify();
 
-            return (m_numerator * m_denominator) == (anotherRational.m_numerator * anotherRational.m_denominator);
+            return (leftRational.getNumerator() == rightRational.getNumerator() &&
+                    leftRational.getDenominator() == rightRational.getDenominator());
         }
 
         /**
@@ -287,6 +289,38 @@ namespace Arkulib {
          *********************************************** OPERATOR < *************************************************
          ************************************************************************************************************/
 
+        /**
+         * @brief < Comparison between 2 rationals
+         * @param anotherRational
+         * @return True if the first rational is inferior to the second
+         */
+        inline bool operator<(const Rational<IntLikeType> &anotherRational) {
+            double firstRatio = (float)getNumerator() / getDenominator();
+            double secondRatio = (float)anotherRational.getNumerator() / anotherRational.getDenominator();
+            return (firstRatio < secondRatio);
+        }
+
+        /**
+         * @brief < Comparison between a rational and a non-rational. Example: Rational < int
+         * @tparam U
+         * @param nonRational
+         * @return True if the rational is inferior to the second operand
+         */
+        template<typename U>
+        inline bool operator<(const U &nonRational) { return *this < Rational(nonRational); }
+
+        /**
+         * @brief < Comparison between a non-rational and a rational. Example: int < Rational
+         * @tparam U
+         * @param nonRational
+         * @param rational
+         * @return True if the non-rational is inferior to the rational
+         */
+        template<typename U>
+        inline friend bool operator<(U nonRational, const Rational<IntLikeType> &rational) {
+            return Rational(nonRational) < rational;
+        }
+
         /************************************************************************************************************
          *********************************************** OPERATOR <= *************************************************
          ************************************************************************************************************/
@@ -294,6 +328,36 @@ namespace Arkulib {
         /************************************************************************************************************
          *********************************************** OPERATOR > *************************************************
          ************************************************************************************************************/
+
+        /**
+         * @brief > Comparison between 2 rationals
+         * @param anotherRational
+         * @return True if the first rational is inferior to the second
+         */
+        inline bool operator>(const Rational<IntLikeType> &anotherRational) {
+            return (getNumerator() / getDenominator() > anotherRational.getNumerator() / anotherRational.getDenominator());
+        }
+
+        /**
+         * @brief > Comparison between a rational and a non-rational. Example: Rational > int
+         * @tparam U
+         * @param nonRational
+         * @return True if the rational is inferior to the second operand
+         */
+        template<typename U>
+        inline bool operator>(const U &nonRational) { return *this > Rational(nonRational); }
+
+        /**
+         * @brief < Comparison between a non-rational and a rational. Example: int > Rational
+         * @tparam U
+         * @param nonRational
+         * @param rational
+         * @return True if the non-rational is superior to the rational
+         */
+        template<typename U>
+        inline friend bool operator>(U nonRational, const Rational<IntLikeType> &rational) {
+            return Rational(nonRational) > rational;
+        }
 
         /************************************************************************************************************
          *********************************************** OPERATOR >= *************************************************
@@ -349,15 +413,15 @@ namespace Arkulib {
         */
         Rational<IntLikeType> pow(double k);
 
+        inline Rational<IntLikeType> abs() { return Rational<IntLikeType>(std::abs(m_numerator), std::abs(m_denominator)); };
 
-        //ToDo: abs
         //ToDo: Peut-être une fonction qui permet de simplifier le rationel ? Si c'est faisable, genre qui renvoie une approximation plus simple
         //ToDo: ...
 
         /**
          * @brief Simplify the Rational with GCD (called in constructor)
          */
-        void simplify() noexcept;
+        Rational<IntLikeType> simplify() const noexcept;
 
         /************************************************************************************************************
          ************************************************* STATIC ***************************************************
@@ -510,14 +574,15 @@ namespace Arkulib {
         );
     }
 
-    template<typename IntLikeType> //May be optimised !!!!!!!!
+    template<typename IntLikeType>
+    //May be optimised !!!!!!!!
     Rational<IntLikeType> Rational<IntLikeType>::pow(const double k) {
 
         /*
         if (integer(k)){
             Rational<IntLikeType> rationalPow;
             rationalPow.m_numerator = std::pow(double(m_numerator), k);
-            rationalPow.m_denominator =  std::pow(double(m_denominator), k);
+            rationalPow.m_denominator = std::pow(double(m_denominator), k);
             simplify();
             return rationalPow;
         }*/
@@ -528,12 +593,15 @@ namespace Arkulib {
     }
 
     template<typename IntLikeType>
-    void Rational<IntLikeType>::simplify()  noexcept {
+    Rational<IntLikeType> Rational<IntLikeType>::simplify() const noexcept {
         const int gcd = std::gcd(m_numerator, m_denominator);
         assert(gcd != 0 && "GCD shouldn't be equal to 0");
 
-        m_denominator /= gcd;
-        m_numerator /= gcd;
+        return Rational<IntLikeType>(
+                m_numerator / gcd,
+                m_denominator / gcd,
+                false
+        );
     }
 
     /************************************************************************************************************
@@ -550,15 +618,15 @@ namespace Arkulib {
 
         const double threshold = 0.01;
         if (floatingRatio <= 0 + threshold || iter == 0) {
-            return Rational::Zero();
+            return Rational<T>::Zero();
         }
 
         if (floatingRatio < 1) {
             return fromFloat(1. / floatingRatio, iter).inverse();
         }
 
-        T integerPart = T(floatingRatio);
-        return fromFloat(floatingRatio - integerPart, iter - 1) + Arkulib::Rational(integerPart, 1);
+        T integerPart = int(floatingRatio);
+        return fromFloat(floatingRatio - integerPart, iter - 1) + Arkulib::Rational<T>(integerPart, 1);
     }
 
     /************************************************************************************************************

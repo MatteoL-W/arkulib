@@ -43,13 +43,14 @@ TEST (ArkulibExpOperation, ExponentialInverted) {
 }
 
 TEST (ArkulibExpOperation, ExponentialTimeExponential) {
-    Arkulib::Rational r1(1, 3);
-    Arkulib::Rational r2(9,4);
-    std::cout << (r1 + r2).exp() << std::endl; // 13,2412
-    std::cout << r1.exp() << std::endl; //  1,39561
-    std::cout << r2.exp() << std::endl; // 9,48774
+    // We don't use int because the numerator is actually superior to INT_MAX
+    Arkulib::Rational<long long int> r1(1, 3);
+    Arkulib::Rational<long long int> r2(9,4);
+    Arkulib::Rational<long long int> r3 = r1.exp() * r2.exp();
+    Arkulib::Rational<long long int> r4 = (r1 + r2).exp();
 
-    bool shouldBeEqualToTrue = (r1 + r2).exp() == r1.exp() * r2.exp();
+
+    bool shouldBeEqualToTrue = (r4 - r3).abs() < 0.1;
     ASSERT_EQ (shouldBeEqualToTrue, true);
 }
 
@@ -57,11 +58,10 @@ TEST (ArkulibExpOperation, ExponentialTimeExponential) {
 TEST (ArkulibExpOperation, ExponentialDivideExponential) {
     Arkulib::Rational r1(5, 4);
     Arkulib::Rational r2(-1,6);
-    std::cout << (r1 - r2).exp() << std::endl;
-    std::cout << r1.exp() << std::endl;
-    std::cout << r2.exp() << std::endl;
+    Arkulib::Rational r3 = r1.exp() / r2.exp();
+    Arkulib::Rational r4 = (r1 - r2).exp();
 
-    bool shouldBeEqualToTrue = (r1 - r2).exp() == r1.exp() / r2.exp();
+    bool shouldBeEqualToTrue = (r4 - r3).abs() < 0.1;
     ASSERT_EQ (shouldBeEqualToTrue, true);
 }
 
