@@ -254,6 +254,7 @@ namespace Arkulib {
         inline bool operator==(const Rational<IntLikeType> &anotherRational) {
             // ToDo: Gérer les multiples ?
             // + ToDo: Là (1/2) == (2/1) donc c'est grave faux
+
             return (m_numerator * m_denominator) == (anotherRational.m_numerator * anotherRational.m_denominator);
         }
 
@@ -509,7 +510,7 @@ namespace Arkulib {
         );
     }
 
-    template<typename IntLikeType> //May be optimised
+    template<typename IntLikeType> //May be optimised !!!!!!!!
     Rational<IntLikeType> Rational<IntLikeType>::pow(const double k) {
 
         if (integer(k)){
@@ -526,7 +527,7 @@ namespace Arkulib {
     }
 
     template<typename IntLikeType>
-    void Rational<IntLikeType>::simplify() noexcept {
+    void Rational<IntLikeType>::simplify()  noexcept {
         const int gcd = std::gcd(m_numerator, m_denominator);
         assert(gcd != 0 && "GCD shouldn't be equal to 0");
 

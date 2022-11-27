@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
 
 enable_testing()
-add_executable(arkulib_tests cosine.cpp Sqrt.cpp)
+add_executable(arkulib_tests cosine.cpp Sqrt.cpp exponential.cpp)
 
 # Get source files
 file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS "./*")
