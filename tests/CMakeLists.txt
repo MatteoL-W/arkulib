@@ -1,18 +1,22 @@
 cmake_minimum_required(VERSION 3.13)
 
 enable_testing()
-add_executable(arkulib_tests cosine.cpp Sqrt.cpp exponential.cpp pow.cpp)
+set(EXECUTABLE_NAME Arkulib_tests)
+add_executable(${EXECUTABLE_NAME})
 
 # Get source files
 file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS "./*")
+target_sources(${EXECUTABLE_NAME} PRIVATE ${SRC_FILES})
 
-# Link files to project target
-target_sources(arkulib_tests PRIVATE ${SRC_FILES})
-target_link_libraries(arkulib_tests gtest Arkulib)
-target_compile_features(arkulib_tests PRIVATE cxx_std_17)
+# Include Arkulib Library
+include_directories(${CMAKE_SOURCE_DIR}/arkulib/include)
+target_link_libraries(${EXECUTABLE_NAME} gtest Arkulib)
+
+# Settings
+target_compile_features(${EXECUTABLE_NAME} PRIVATE cxx_std_17)
 
 # Add Google Unit Tests
-message(STATUS "Google Test CMake ..." )
+message(STATUS "Google Test CMake ...")
 include(FetchContent)
 FetchContent_Declare(
         googletest

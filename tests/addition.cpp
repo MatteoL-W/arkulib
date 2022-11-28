@@ -1,36 +1,38 @@
 #include <gtest/gtest.h>
 #include "../include/Rational.hpp"
 
-TEST (ArkulibPlusOperation, Rationals) {
-    Arkulib::Rational r1(10,7);
-    Arkulib::Rational r2(7,7);
+//ToDo Negatives tests
 
-    bool shouldBeEqualToTrue = (r1 + r2) == Arkulib::Rational(17,7);
+TEST (ArkulibPlusOperation, Rationals) {
+    Arkulib::Rational r1(10, 7);
+    Arkulib::Rational r2(7, 7);
+
+    bool shouldBeEqualToTrue = (r1 + r2) == Arkulib::Rational(17, 7);
     ASSERT_EQ (shouldBeEqualToTrue, true);
 }
 
 TEST (ArkulibPlusOperation, ConsecutiveRationalsOperation) {
-    Arkulib::Rational r1(10,7);
-    Arkulib::Rational r2(7,7);
-    Arkulib::Rational r3(14,2);
-    Arkulib::Rational r4(2,7);
+    Arkulib::Rational r1(10, 7);
+    Arkulib::Rational r2(7, 7);
+    Arkulib::Rational r3(14, 2);
+    Arkulib::Rational r4(2, 7);
     Arkulib::Rational r5 = (r1 + r2);
 
-    bool shouldBeEqualToTrue = r5 == Arkulib::Rational(17,7);
+    bool shouldBeEqualToTrue = r5 == Arkulib::Rational(17, 7);
     ASSERT_EQ (shouldBeEqualToTrue, true);
 
     r5 = r5 + r3;
-    shouldBeEqualToTrue = r5 == Arkulib::Rational(66,7);
+    shouldBeEqualToTrue = r5 == Arkulib::Rational(66, 7);
     ASSERT_EQ (shouldBeEqualToTrue, true);
 
     r5 = r5 + r4;
-    shouldBeEqualToTrue = r5 == Arkulib::Rational(68,7);
+    shouldBeEqualToTrue = r5 == Arkulib::Rational(68, 7);
     ASSERT_EQ (shouldBeEqualToTrue, true);
 }
 
 TEST (ArkulibPlusOperation, RationalsThenSimplify) {
-    Arkulib::Rational r1(1,3);
-    Arkulib::Rational r2(2,3);
+    Arkulib::Rational r1(1, 3);
+    Arkulib::Rational r2(2, 3);
 
     bool shouldBeEqualToTrue = (r1 + r2) == 1;
     ASSERT_EQ (shouldBeEqualToTrue, true);
@@ -38,9 +40,9 @@ TEST (ArkulibPlusOperation, RationalsThenSimplify) {
 
 TEST (ArkulibPlusOperation, RationalsAndZero) {
     Arkulib::Rational r1(0);
-    Arkulib::Rational r2(2,3);
+    Arkulib::Rational r2(2, 3);
 
-    bool shouldBeEqualToTrue = (r1 + r2) == Arkulib::Rational(2,3);
+    bool shouldBeEqualToTrue = (r1 + r2) == Arkulib::Rational(2, 3);
     ASSERT_EQ (shouldBeEqualToTrue, true);
 
     shouldBeEqualToTrue = (r1 + r1) == Arkulib::Rational<int>::Zero();
@@ -49,16 +51,16 @@ TEST (ArkulibPlusOperation, RationalsAndZero) {
 
 TEST (ArkulibPlusOperation, RationalsAndOne) {
     Arkulib::Rational r1(1);
-    Arkulib::Rational r2(2,3);
+    Arkulib::Rational r2(2, 3);
 
-    bool shouldBeEqualToTrue = (r1 + r2) == Arkulib::Rational(5,3);
+    bool shouldBeEqualToTrue = (r1 + r2) == Arkulib::Rational(5, 3);
     ASSERT_EQ (shouldBeEqualToTrue, true);
 }
 
 TEST (ArkulibPlusOperation, BigRationals) {
     Arkulib::Rational r1(1000, 3);
-    Arkulib::Rational r2(3000,2999);
+    Arkulib::Rational r2(3000, 2999);
 
-    bool shouldBeEqualToTrue = (r1 + r2) == Arkulib::Rational(3008000,8997);
+    bool shouldBeEqualToTrue = (r1 + r2) == Arkulib::Rational(3008000, 8997);
     ASSERT_EQ (shouldBeEqualToTrue, true);
 }

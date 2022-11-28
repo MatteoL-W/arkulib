@@ -78,9 +78,9 @@ namespace Arkulib {
          ************************************************ GETTERS ***************************************************
          ************************************************************************************************************/
 
-        inline IntLikeType getNumerator() const noexcept { return m_numerator; }
+        [[nodiscard]] inline IntLikeType getNumerator() const noexcept { return m_numerator; }
 
-        inline IntLikeType getDenominator() const noexcept { return m_denominator; }
+        [[nodiscard]] inline IntLikeType getDenominator() const noexcept { return m_denominator; }
 
         /************************************************************************************************************
          ************************************************* STATUS ***************************************************
@@ -89,22 +89,22 @@ namespace Arkulib {
         /**
          * @return True if the constant is an integer
          */
-        inline bool integer(const double k) { return k == (int) k; };
+        inline bool integer(const double k) const { return k == (int) k; };
 
         /**
          * @return True if the rational is negative
          */
-        inline bool isNegative() { return m_numerator < 0; };
+        [[maybe_unused]] [[nodiscard]] inline bool isNegative() const { return m_numerator < 0; };
 
         /**
          * @return True if the rational is an integer
          */
-        inline bool isInteger() { return m_denominator == 1; };
+        [[maybe_unused]] [[nodiscard]] inline bool isInteger() const { return m_denominator == 1; };
 
         /**
          * @return True if the rational is equal to zero
          */
-        inline bool isZero() { return m_denominator == 0; };
+        [[maybe_unused]] [[nodiscard]] inline bool isZero() const { return m_denominator == 0; };
 
         /************************************************************************************************************
          *********************************************** OPERATOR + *************************************************
@@ -295,8 +295,8 @@ namespace Arkulib {
          * @return True if the first rational is inferior to the second
          */
         inline bool operator<(const Rational<IntLikeType> &anotherRational) {
-            double firstRatio = (float)getNumerator() / getDenominator();
-            double secondRatio = (float)anotherRational.getNumerator() / anotherRational.getDenominator();
+            double firstRatio = (float) getNumerator() / getDenominator();
+            double secondRatio = (float) anotherRational.getNumerator() / anotherRational.getDenominator();
             return (firstRatio < secondRatio);
         }
 
@@ -335,7 +335,8 @@ namespace Arkulib {
          * @return True if the first rational is inferior to the second
          */
         inline bool operator>(const Rational<IntLikeType> &anotherRational) {
-            return (getNumerator() / getDenominator() > anotherRational.getNumerator() / anotherRational.getDenominator());
+            return (getNumerator() / getDenominator() >
+                    anotherRational.getNumerator() / anotherRational.getDenominator());
         }
 
         /**
@@ -387,33 +388,37 @@ namespace Arkulib {
          * @brief Inverse a rational : a / b into b / a
          * @return The inverted Rational
          */
-        inline Rational<IntLikeType> inverse() { return Rational<IntLikeType>(m_denominator, m_numerator); }
+        [[maybe_unused]] constexpr inline Rational<IntLikeType> inverse() const {
+            return Rational<IntLikeType>(m_denominator, m_numerator);
+        }
 
         /**
         * @brief Give the square root of a rational
         * @return The square root as a Rational
         */
-        Rational<IntLikeType> sqrt();
+        [[maybe_unused]] constexpr Rational<IntLikeType> sqrt() const;
 
         /**
         * @brief Give the cosine of a rational
         * @return The cosine as a Rational
         */
-        Rational<IntLikeType> cos();
+        [[maybe_unused]] constexpr Rational<IntLikeType> cos() const;
 
         /**
         * @brief Give the exponential of a rational
         * @return The exponential as a Rational
         */
-        Rational<IntLikeType> exp();
+        [[maybe_unused]] constexpr Rational<IntLikeType> exp() const;
 
         /**
         * @brief Give the power of a rational
         * @return The power as a Rational
         */
-        Rational<IntLikeType> pow(double k);
+        [[maybe_unused]] constexpr Rational<IntLikeType> pow(double k) const;
 
-        inline Rational<IntLikeType> abs() { return Rational<IntLikeType>(std::abs(m_numerator), std::abs(m_denominator)); };
+        [[maybe_unused]] constexpr inline Rational<IntLikeType> abs() const {
+            return Rational<IntLikeType>(std::abs(m_numerator), std::abs(m_denominator));
+        };
 
         //ToDo: Peut-être une fonction qui permet de simplifier le rationel ? Si c'est faisable, genre qui renvoie une approximation plus simple
         //ToDo: ...
@@ -421,33 +426,33 @@ namespace Arkulib {
         /**
          * @brief Simplify the Rational with GCD (called in constructor)
          */
-        Rational<IntLikeType> simplify() const noexcept;
+        [[maybe_unused]] [[nodiscard]] constexpr Rational<IntLikeType> simplify() const noexcept;
 
         /************************************************************************************************************
          ************************************************* STATIC ***************************************************
          ************************************************************************************************************/
 
         /**
-         * @brief Return zero
-         * @return Rational<IntLikeType>
+         * @brief Return zero in Rational Type
+         * @return Rational with 0 as numerator and 1 as denominator
          */
         inline constexpr static Rational<IntLikeType> Zero() noexcept { return Rational<IntLikeType>(0, 1); }
 
         /**
-         * @brief Return one
-         * @return Rational<IntLikeType>
+         * @brief Return one in Rational Type
+         * @return Rational with 1 as numerator and 1 as denominator
          */
         inline constexpr static Rational<IntLikeType> One() noexcept { return Rational<IntLikeType>(1, 1); }
 
         /**
-         * @brief Return an approximation of pi
-         * @return Rational<IntLikeType>
+         * @brief Return Pi in Rational Type
+         * @return An approximation of Pi
          */
         inline constexpr static Rational<IntLikeType> Pi() noexcept { return Rational<IntLikeType>(355, 113); }
 
         /**
-         * @brief Return infinite constant rational
-         * @return Rational<IntLikeType>
+         * @brief Return an approximation of +infinite in Rational Type
+         * @return 1 as numerator and 0 as denominator
          */
         inline constexpr static Rational<IntLikeType> Infinite() noexcept { return Rational<IntLikeType>(1, 0); }
 
@@ -459,7 +464,7 @@ namespace Arkulib {
          * @brief Get the integer part of the ratio
          * @return An int (type IntLikeType)
          */
-        inline constexpr IntLikeType toInteger() const noexcept { return IntLikeType(m_numerator / m_denominator); }
+        [[nodiscard]] inline constexpr IntLikeType toInteger() const noexcept { return IntLikeType(m_numerator / m_denominator); }
 
         /**
          * @brief Get an approximation floating point number of the ratio
@@ -467,7 +472,7 @@ namespace Arkulib {
          * @return A floating point number (type U)
          */
         template<typename U = float>
-        inline constexpr U toFloat() const noexcept { return m_numerator / U(m_denominator); }
+        [[nodiscard]] inline constexpr U toFloat() const noexcept { return m_numerator / U(m_denominator); }
 
         /**
          * @brief Return ( _numerator_ / _denominator_ ) as a string
@@ -479,13 +484,13 @@ namespace Arkulib {
 
         /**
          * @brief A method who automatically set numerator and denominator to approach the float parameter
-         * @tparam U
+         * @tparam FloatLikeType
          * @param floatingRatio
          * @param iter
          * @return
          */
-        template<typename U = double>
-        Rational<IntLikeType> fromFloat(U floatingRatio, size_t iter) const;
+        template<typename FloatLikeType = double>
+        [[nodiscard]] constexpr Rational<IntLikeType> fromFloat(FloatLikeType floatingRatio, size_t iter) const;
 
     private:
         /************************************************************************************************************
@@ -502,9 +507,9 @@ namespace Arkulib {
      ********************************************* OPERATOR + DEF ***********************************************
      ************************************************************************************************************/
 
-    template<typename T>
-    Rational<T> Rational<T>::operator+(const Rational<T> &anotherRational) {
-        return Rational<T>(
+    template<typename IntLikeType>
+    Rational<IntLikeType> Rational<IntLikeType>::operator+(const Rational<IntLikeType> &anotherRational) {
+        return Rational<IntLikeType>(
                 m_numerator * anotherRational.m_denominator + m_denominator * anotherRational.m_numerator,
                 m_denominator * anotherRational.m_denominator
         );
@@ -514,9 +519,9 @@ namespace Arkulib {
      ********************************************* OPERATOR - DEF ***********************************************
      ************************************************************************************************************/
 
-    template<typename T>
-    Rational<T> Rational<T>::operator-(const Rational<T> &anotherRational) {
-        return Rational<T>(
+    template<typename IntLikeType>
+    Rational<IntLikeType> Rational<IntLikeType>::operator-(const Rational<IntLikeType> &anotherRational) {
+        return Rational<IntLikeType>(
                 m_numerator * anotherRational.m_denominator - m_denominator * anotherRational.m_numerator,
                 m_denominator * anotherRational.m_denominator
         );
@@ -526,9 +531,9 @@ namespace Arkulib {
      ********************************************* OPERATOR * DEF ***********************************************
      ************************************************************************************************************/
 
-    template<typename T>
-    Rational<T> Rational<T>::operator*(const Rational<T> &anotherRational) {
-        return Rational<T>(
+    template<typename IntLikeType>
+    Rational<IntLikeType> Rational<IntLikeType>::operator*(const Rational<IntLikeType> &anotherRational) {
+        return Rational<IntLikeType>(
                 m_numerator * anotherRational.m_numerator,
                 m_denominator * anotherRational.m_denominator
         );
@@ -538,9 +543,9 @@ namespace Arkulib {
      ********************************************* OPERATOR / DEF ***********************************************
      ************************************************************************************************************/
 
-    template<typename T>
-    Rational<T> Rational<T>::operator/(const Rational<T> &anotherRational) {
-        return Rational<T>(
+    template<typename IntLikeType>
+    Rational<IntLikeType> Rational<IntLikeType>::operator/(const Rational<IntLikeType> &anotherRational) {
+        return Rational<IntLikeType>(
                 m_numerator * anotherRational.m_denominator,
                 m_denominator * anotherRational.m_numerator
         );
@@ -551,7 +556,7 @@ namespace Arkulib {
      ************************************************************************************************************/
 
     template<typename IntLikeType>
-    Rational<IntLikeType> Rational<IntLikeType>::sqrt() {
+    constexpr Rational<IntLikeType> Rational<IntLikeType>::sqrt() const {
         // ToDo : Do a take !
         // Do we (keep the precision) or (simplify the operations in order to ease the operations)
         if (isNegative()) throw Arkulib::Exceptions::NegativeSqrtException();
@@ -561,22 +566,22 @@ namespace Arkulib {
     }
 
     template<typename IntLikeType>
-    Rational<IntLikeType> Rational<IntLikeType>::cos() {
+    Rational<IntLikeType> constexpr Rational<IntLikeType>::cos() const {
         return Rational<IntLikeType>(
                 std::cos(double(m_numerator) / m_denominator)
         );
     }
 
     template<typename IntLikeType>
-    Rational<IntLikeType> Rational<IntLikeType>::exp() {
+    Rational<IntLikeType> constexpr Rational<IntLikeType>::exp() const {
         return Rational<IntLikeType>(
                 std::exp(double(m_numerator) / m_denominator)
         );
     }
 
     template<typename IntLikeType>
-    //May be optimised !!!!!!!!
-    Rational<IntLikeType> Rational<IntLikeType>::pow(const double k) {
+    //ToDo: May be optimised !!!!!!!! + Remove integer() function
+    Rational<IntLikeType> constexpr Rational<IntLikeType>::pow(const double k) const {
 
         /*
         if (integer(k)){
@@ -593,7 +598,7 @@ namespace Arkulib {
     }
 
     template<typename IntLikeType>
-    Rational<IntLikeType> Rational<IntLikeType>::simplify() const noexcept {
+    Rational<IntLikeType> constexpr Rational<IntLikeType>::simplify() const noexcept {
         const int gcd = std::gcd(m_numerator, m_denominator);
         assert(gcd != 0 && "GCD shouldn't be equal to 0");
 
@@ -608,9 +613,9 @@ namespace Arkulib {
      ********************************************** CONVERSION DEF **********************************************
      ************************************************************************************************************/
 
-    template<typename T>
-    template<typename U>
-    Rational<T> Rational<T>::fromFloat(const U floatingRatio, const size_t iter) const {
+    template<typename IntLikeType>
+    template<typename FloatLikeType>
+    Rational<IntLikeType> constexpr Rational<IntLikeType>::fromFloat(const FloatLikeType floatingRatio, const size_t iter) const {
         //ToDo: Trouver un moyen de pas utiliser de paramètres iter
         if (floatingRatio < 0) {
             return -fromFloat(-floatingRatio, iter);
@@ -618,23 +623,23 @@ namespace Arkulib {
 
         const double threshold = 0.01;
         if (floatingRatio <= 0 + threshold || iter == 0) {
-            return Rational<T>::Zero();
+            return Rational<IntLikeType>::Zero();
         }
 
         if (floatingRatio < 1) {
             return fromFloat(1. / floatingRatio, iter).inverse();
         }
 
-        T integerPart = int(floatingRatio);
-        return fromFloat(floatingRatio - integerPart, iter - 1) + Arkulib::Rational<T>(integerPart, 1);
+        IntLikeType integerPart = int(floatingRatio);
+        return fromFloat(floatingRatio - integerPart, iter - 1) + Arkulib::Rational<IntLikeType>(integerPart, 1);
     }
 
     /************************************************************************************************************
      ******************************************* STD::COUT OVERRIDE *********************************************
      ************************************************************************************************************/
 
-    template<typename T>
-    std::ostream &operator<<(std::ostream &stream, const Arkulib::Rational<T> &rational) {
+    template<typename IntLikeType>
+    std::ostream &operator<<(std::ostream &stream, const Arkulib::Rational<IntLikeType> &rational) {
         return stream << rational.toString();
     }
 
