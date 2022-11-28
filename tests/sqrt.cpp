@@ -10,14 +10,12 @@ TEST (ArkulibSquareOperation, Rationals) {
 
 TEST (ArkulibSquareOperation, ConsecutiveSquareOperation) {
     Arkulib::Rational r1(16, 81);
-
     Arkulib::Rational r2 = r1.sqrt();
 
     bool shouldBeEqualToTrue = r2 == Arkulib::Rational(4, 9);
     ASSERT_EQ (shouldBeEqualToTrue, true);
 
-    Arkulib::Rational r3 = r2.sqrt();
-    shouldBeEqualToTrue = r3 == Arkulib::Rational(2, 3);
+    shouldBeEqualToTrue = r2.sqrt() == Arkulib::Rational(2, 3);
     ASSERT_EQ (shouldBeEqualToTrue, true);
 
 }
@@ -49,6 +47,7 @@ TEST (ArkulibSquareOperation, SquareTimeSquare) {
 
     shouldBeEqualToTrue = r1.sqrt() * r2.sqrt() == (r1 * r2).sqrt();
     ASSERT_NEAR (shouldBeEqualToTrue, true, 1); //ASSERT_EQ doesn't work because of a slight rounding error
+    //ToDo Fix
 }
 
 TEST (ArkulibSquareOperation, BigRationals) {

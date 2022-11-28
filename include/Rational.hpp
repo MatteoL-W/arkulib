@@ -15,6 +15,7 @@
 
 #include "Exceptions/DivideByZeroException.hpp"
 #include "Exceptions/NegativeSqrtException.hpp"
+#include "Exceptions/InvalidAccessArgumentException.hpp"
 
 namespace Arkulib {
     /**
@@ -33,7 +34,7 @@ namespace Arkulib {
         /**
          * @brief Default constructor : instantiate an object without parameters.
          */
-        Rational() = default;
+        inline constexpr Rational() = default;
 
         /**
          * @brief Classic constructor : create a rational from a numerator and a denominator (set default at 1)
@@ -82,14 +83,38 @@ namespace Arkulib {
 
         [[nodiscard]] inline IntLikeType getDenominator() const noexcept { return m_denominator; }
 
+        /**
+         * @brief Getter with [] operator
+         * @param id
+         * @return If id == 0 => return numerator; if id == 1 => return denominator
+         */
+        inline const IntLikeType& operator[](const size_t& id) const {
+            if (id == 0) { return m_numerator; }
+            else if (id == 1) { return m_denominator; }
+            else { throw Arkulib::Exceptions::InvalidAccessArgument(); }
+        }
+
+        /************************************************************************************************************
+         ************************************************ SETTERS ***************************************************
+         ************************************************************************************************************/
+
+        inline void setNumerator(IntLikeType numerator) { m_numerator = numerator; };
+
+        inline void setDenominator(IntLikeType denominator) { m_denominator = denominator; };
+
+        /**
+         * @brief Setter with [] operator. Example: rational[0] = 1 and rational[1] = 2 => (1/2)
+         * @param id
+         */
+        inline IntLikeType& operator[](const size_t& id) {
+            if (id == 0) { return m_numerator; }
+            else if (id == 1) { return m_denominator; }
+            else { throw Arkulib::Exceptions::InvalidAccessArgument(); }
+        }
+
         /************************************************************************************************************
          ************************************************* STATUS ***************************************************
          ************************************************************************************************************/
-
-        /**
-         * @return True if the constant is an integer
-         */
-        inline bool integer(const double k) const { return k == (int) k; };
 
         /**
          * @return True if the rational is negative
@@ -104,7 +129,7 @@ namespace Arkulib {
         /**
          * @return True if the rational is equal to zero
          */
-        [[maybe_unused]] [[nodiscard]] inline bool isZero() const { return m_denominator == 0; };
+        [[maybe_unused]] [[nodiscard]] inline bool isZero() const { return m_numerator == 0; };
 
         /************************************************************************************************************
          *********************************************** OPERATOR + *************************************************
@@ -472,7 +497,7 @@ namespace Arkulib {
          * @return A floating point number (type U)
          */
         template<typename U = float>
-        [[nodiscard]] inline constexpr U toFloat() const noexcept { return m_numerator / U(m_denominator); }
+        [[nodiscard]] inline constexpr U toRealNumber() const noexcept { return m_numerator / U(m_denominator); }
 
         /**
          * @brief Return ( _numerator_ / _denominator_ ) as a string
@@ -582,16 +607,6 @@ namespace Arkulib {
     template<typename IntLikeType>
     //ToDo: May be optimised !!!!!!!! + Remove integer() function
     Rational<IntLikeType> constexpr Rational<IntLikeType>::pow(const double k) const {
-
-        /*
-        if (integer(k)){
-            Rational<IntLikeType> rationalPow;
-            rationalPow.m_numerator = std::pow(double(m_numerator), k);
-            rationalPow.m_denominator = std::pow(double(m_denominator), k);
-            simplify();
-            return rationalPow;
-        }*/
-
         return Rational<IntLikeType>(
                 std::pow(double(m_numerator) / m_denominator, k)
         );

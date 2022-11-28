@@ -6,9 +6,9 @@
 TEST (ArkulibPlusOperation, Rationals) {
     Arkulib::Rational r1(10, 7);
     Arkulib::Rational r2(7, 7);
+    Arkulib::Rational r3(17, 7);
 
-    bool shouldBeEqualToTrue = (r1 + r2) == Arkulib::Rational(17, 7);
-    ASSERT_EQ (shouldBeEqualToTrue, true);
+    ASSERT_EQ ((r1 + r2) == r3, true);
 }
 
 TEST (ArkulibPlusOperation, ConsecutiveRationalsOperation) {
@@ -34,8 +34,7 @@ TEST (ArkulibPlusOperation, RationalsThenSimplify) {
     Arkulib::Rational r1(1, 3);
     Arkulib::Rational r2(2, 3);
 
-    bool shouldBeEqualToTrue = (r1 + r2) == 1;
-    ASSERT_EQ (shouldBeEqualToTrue, true);
+    ASSERT_EQ ((r1 + r2) == 1, true);
 }
 
 TEST (ArkulibPlusOperation, RationalsAndZero) {

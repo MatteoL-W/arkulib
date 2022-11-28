@@ -31,20 +31,15 @@ TEST (ArkulibTimeOperation, ConsecutiveRationalsOperation) {
 TEST (ArkulibTimeOperation, RationalsThenSimplify) {
     Arkulib::Rational r1(4, 7);
     Arkulib::Rational r2(7, 4);
-
-    bool shouldBeEqualToTrue = (r1 * r2) == 1;
-    ASSERT_EQ (shouldBeEqualToTrue, true);
+    ASSERT_EQ ((r1 * r2) == 1, true);
 }
 
 TEST (ArkulibTimeOperation, RationalsAndZero) {
     Arkulib::Rational r1(0);
     Arkulib::Rational r2(1, 3);
 
-    bool shouldBeEqualToTrue = (r1 * r2) == Arkulib::Rational<int>::Zero();
-    ASSERT_EQ (shouldBeEqualToTrue, true);
-
-    shouldBeEqualToTrue = (r1 * r1) == Arkulib::Rational<int>::Zero();
-    ASSERT_EQ (shouldBeEqualToTrue, true);
+    ASSERT_EQ ((r1 * r2) == Arkulib::Rational<int>::Zero(), true);
+    ASSERT_EQ ((r1 * r1) == Arkulib::Rational<int>::Zero(), true);
 }
 
 TEST (ArkulibTimeOperation, RationalsAndOne) {

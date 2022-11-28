@@ -14,7 +14,6 @@ TEST (ArkulibPowOperation, Rationals) {
 
 TEST (ArkulibPowOperation, ConsecutiveRationalsOperation) {
     Arkulib::Rational r1(7, 3);
-
     Arkulib::Rational r2 = r1.pow(4);
 
     bool shouldBeEqualToTrue = r2 == Arkulib::Rational(2401, 81);
@@ -46,7 +45,7 @@ TEST (ArkulibPowOperation, PowZeroAndOne) {
     ASSERT_EQ (shouldBeEqualToTrue, true);
 }
 
-TEST (ArkulibPowOperation, PowTiemPow) {
+TEST (ArkulibPowOperation, PowTimePow) {
     Arkulib::Rational r1(1, 5);
 
     bool shouldBeEqualToTrue = r1.pow(4).pow(2) == r1.pow(2).pow(4);

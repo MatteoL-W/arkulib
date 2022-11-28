@@ -32,8 +32,7 @@ TEST (ArkulibMinusOperation, RationalsThenSimplify) {
     Arkulib::Rational r1(7, 4);
     Arkulib::Rational r2(3, 4);
 
-    bool shouldBeEqualToTrue = (r1 - r2) == 1;
-    ASSERT_EQ (shouldBeEqualToTrue, true);
+    ASSERT_EQ ((r1 - r2) == 1, true);
 }
 
 TEST (ArkulibMinusOperation, RationalsAndZero) {
@@ -50,7 +49,6 @@ TEST (ArkulibMinusOperation, RationalsAndZero) {
 TEST (ArkulibMinusOperation, RationalsAndOne) {
     Arkulib::Rational r1(6, 5);
     Arkulib::Rational r2(1);
-
 
     bool shouldBeEqualToTrue = (r1 - r2) == Arkulib::Rational(1, 5);
     ASSERT_EQ (shouldBeEqualToTrue, true);

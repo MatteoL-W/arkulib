@@ -32,8 +32,7 @@ TEST (ArkulibDivideOperation, RationalsThenSimplify) {
     Arkulib::Rational r1(1, 2);
     Arkulib::Rational r2(1, 2);
 
-    bool shouldBeEqualToTrue = (r1 / r2) == 1;
-    ASSERT_EQ (shouldBeEqualToTrue, true);
+    ASSERT_EQ ((r1 / r2) == 1, true);
 }
 
 TEST (ArkulibDivideOperation, RationalsAndZero) {
@@ -44,14 +43,14 @@ TEST (ArkulibDivideOperation, RationalsAndZero) {
     ASSERT_EQ (shouldBeEqualToTrue, true);
 
     EXPECT_THROW({
-                     try {
-                         shouldBeEqualToTrue = (r1 / r1) == Arkulib::Rational<int>::Zero();
-                     }
-                     catch (const Arkulib::Exceptions::DivideByZeroException &e) {
-                         EXPECT_STREQ("Denominator must not be null", e.what());
-                         throw;
-                     }
-                 }, Arkulib::Exceptions::DivideByZeroException);
+         try {
+             shouldBeEqualToTrue = (r1 / r1) == Arkulib::Rational<int>::Zero();
+         }
+         catch (const Arkulib::Exceptions::DivideByZeroException &e) {
+             EXPECT_STREQ("Denominator must not be null", e.what());
+             throw;
+         }
+     }, Arkulib::Exceptions::DivideByZeroException);
 }
 
 TEST (ArkulibDivideOperation, RationalsAndOne) {
