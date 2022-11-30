@@ -3,14 +3,14 @@
 
 TEST (ArkulibGetter, DefaultGetter) {
     Arkulib::Rational r1{0.75};
-    ASSERT_EQ (3 == r1.getNumerator(), true);
-    ASSERT_EQ (4 == r1.getDenominator(), true);
+    ASSERT_EQ (3, r1.getNumerator());
+    ASSERT_EQ (4, r1.getDenominator());
 }
 
 TEST (ArkulibGetter, HookGetter) {
     Arkulib::Rational r1{0.75};
-    ASSERT_EQ (3 == r1[0], true);
-    ASSERT_EQ (4 == r1[1], true);
+    ASSERT_EQ (3, r1[0]);
+    ASSERT_EQ (4, r1[1]);
 }
 
 TEST (ArkulibGetter, ErrorGetter) {

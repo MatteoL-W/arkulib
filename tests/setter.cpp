@@ -6,8 +6,8 @@ TEST (ArkulibSetter, DefaultSetter) {
     r1.setNumerator(3);
     r1.setDenominator(4);
 
-    ASSERT_EQ (3 == r1.getNumerator(), true);
-    ASSERT_EQ (4 == r1.getDenominator(), true);
+    ASSERT_EQ (3, r1.getNumerator());
+    ASSERT_EQ (4, r1.getDenominator());
 }
 
 TEST (ArkulibSetter, HookSetter) {
@@ -15,8 +15,8 @@ TEST (ArkulibSetter, HookSetter) {
     r1[0] = 3;
     r1[1] = 4;
 
-    ASSERT_EQ (3 == r1.getNumerator(), true);
-    ASSERT_EQ (4 == r1.getDenominator(), true);
+    ASSERT_EQ (3, r1.getNumerator());
+    ASSERT_EQ (4, r1.getDenominator());
 }
 
 TEST (ArkulibGetter, ErrorSetter) {
