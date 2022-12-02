@@ -13,9 +13,7 @@
 #include <iostream>
 #include <numeric>
 
-#include "Exceptions/DivideByZeroException.hpp"
-#include "Exceptions/NegativeSqrtException.hpp"
-#include "Exceptions/InvalidAccessArgumentException.hpp"
+#include "Exceptions/Exceptions.hpp"
 
 namespace Arkulib {
     /**
@@ -34,7 +32,7 @@ namespace Arkulib {
         /**
          * @brief Default constructor : instantiate an object without parameters.
          */
-        inline constexpr Rational() = default;
+        inline constexpr Rational() : m_numerator(0), m_denominator(1) { verifyTemplateType(); }
 
         /**
          * @brief Classic constructor : create a rational from a numerator and a denominator (set default at 1)
@@ -44,15 +42,10 @@ namespace Arkulib {
         inline constexpr Rational(const IntLikeType numerator, const IntLikeType denominator,
                                   const bool willBeReduce = true)
                 : m_numerator(numerator), m_denominator(denominator) {
-            if (denominator == 0) throw Arkulib::Exceptions::DivideByZeroException();
-
-            if (denominator < 0) {
-                m_numerator = -m_numerator;
-                m_denominator = -m_denominator;
-            }
-
+            verifyTemplateType();
+            verifyDenominator(denominator);
             if (willBeReduce) *this = simplify();
-        };
+        }
 
         /**
          * @brief Copy constructor
@@ -67,7 +60,8 @@ namespace Arkulib {
          */
         template<typename U>
         inline constexpr explicit Rational(const U &nonRational) {
-            *this = fromFloat(nonRational, 10);
+            verifyTemplateType();
+            *this = fromFloatingPoint(nonRational, 10);
         }
 
         /**
@@ -88,7 +82,7 @@ namespace Arkulib {
          * @param id
          * @return If id == 0 => return numerator; if id == 1 => return denominator
          */
-        inline const IntLikeType& operator[](const size_t& id) const {
+        inline const IntLikeType &operator[](const size_t &id) const {
             if (id == 0) { return m_numerator; }
             else if (id == 1) { return m_denominator; }
             else { throw Arkulib::Exceptions::InvalidAccessArgument(); }
@@ -100,13 +94,16 @@ namespace Arkulib {
 
         inline void setNumerator(IntLikeType numerator) { m_numerator = numerator; };
 
-        inline void setDenominator(IntLikeType denominator) { m_denominator = denominator; };
+        inline void setDenominator(IntLikeType denominator) {
+            verifyDenominator(denominator);
+            m_denominator = denominator;
+        };
 
         /**
          * @brief Setter with [] operator. Example: rational[0] = 1 and rational[1] = 2 => (1/2)
          * @param id
          */
-        inline IntLikeType& operator[](const size_t& id) {
+        inline IntLikeType &operator[](const size_t &id) {
             if (id == 0) { return m_numerator; }
             else if (id == 1) { return m_denominator; }
             else { throw Arkulib::Exceptions::InvalidAccessArgument(); }
@@ -149,7 +146,9 @@ namespace Arkulib {
          * @return The sum in Rational
          */
         template<typename U>
-        inline Rational<IntLikeType> operator+(const U &nonRational) { return Rational(nonRational) + *this; }
+        inline Rational<IntLikeType> operator+(const U &nonRational) {
+            return Rational<IntLikeType>(nonRational) + *this;
+        }
 
         /**
          * @brief Addition operation between a non-rational and a rational. Example: int + Rational
@@ -160,7 +159,7 @@ namespace Arkulib {
          */
         template<typename U>
         inline friend Rational<IntLikeType> operator+(U nonRational, const Rational<IntLikeType> &rational) {
-            return Rational(nonRational) + rational;
+            return Rational<IntLikeType>(nonRational) + rational;
         }
 
         /************************************************************************************************************
@@ -181,7 +180,9 @@ namespace Arkulib {
          * @return The subtraction in Rational
          */
         template<typename U>
-        inline Rational<IntLikeType> operator-(const U &nonRational) { return *this - Rational(nonRational); }
+        inline Rational<IntLikeType> operator-(const U &nonRational) {
+            return *this - Rational<IntLikeType>(nonRational);
+        }
 
         /**
          * @brief Subtraction operation between a non-rational and a rational. Example: int - Rational
@@ -192,7 +193,7 @@ namespace Arkulib {
          */
         template<typename U>
         inline friend Rational<IntLikeType> operator-(U nonRational, const Rational<IntLikeType> &rational) {
-            return Rational(nonRational) - rational;
+            return Rational<IntLikeType>(nonRational) - rational;
         }
 
         /**
@@ -222,7 +223,9 @@ namespace Arkulib {
          * @return The multiplication in Rational
          */
         template<typename U>
-        inline Rational<IntLikeType> operator*(const U &nonRational) { return *this * Rational(nonRational); }
+        inline Rational<IntLikeType> operator*(const U &nonRational) {
+            return *this * Rational<IntLikeType>(nonRational);
+        }
 
         /**
          * @brief Multiplication operation between a non-rational and a rational. Example: int * Rational
@@ -233,7 +236,7 @@ namespace Arkulib {
          */
         template<typename U>
         inline friend Rational<IntLikeType> operator*(U nonRational, const Rational<IntLikeType> &rational) {
-            return Rational(nonRational) * rational;
+            return Rational<IntLikeType>(nonRational) * rational;
         }
 
         /************************************************************************************************************
@@ -254,7 +257,9 @@ namespace Arkulib {
          * @return The division in Rational
          */
         template<typename U>
-        inline Rational<IntLikeType> operator/(const U &nonRational) { return *this / Rational(nonRational); }
+        inline Rational<IntLikeType> operator/(const U &nonRational) {
+            return *this / Rational<IntLikeType>(nonRational);
+        }
 
         /**
          * @brief Division operation between a non-rational and a rational. Example: int / Rational
@@ -265,7 +270,7 @@ namespace Arkulib {
          */
         template<typename U>
         inline friend Rational<IntLikeType> operator/(U nonRational, const Rational<IntLikeType> &rational) {
-            return Rational(nonRational) / rational;
+            return Rational<IntLikeType>(nonRational) / rational;
         }
 
         /************************************************************************************************************
@@ -292,7 +297,7 @@ namespace Arkulib {
          * @return True if the rational is equal to the second operand
          */
         template<typename U>
-        inline bool operator==(const U &nonRational) { return Rational(nonRational) == *this; }
+        inline bool operator==(const U &nonRational) { return Rational<IntLikeType>(nonRational) == *this; }
 
         /**
          * @brief Comparison between a non-rational and a rational. Example: int == Rational
@@ -303,12 +308,47 @@ namespace Arkulib {
          */
         template<typename U>
         inline friend bool operator==(U nonRational, const Rational<IntLikeType> &rational) {
-            return Rational(nonRational) == rational;
+            return Rational<IntLikeType>(nonRational) == rational;
         }
 
         /************************************************************************************************************
          ********************************************** OPERATOR != *************************************************
          ************************************************************************************************************/
+
+        //ToDo Test
+        /**
+         * @brief Different comparison between 2 rationals
+         * @param anotherRational
+         * @return True if the first rational is different to the second
+         */
+        inline bool operator!=(const Rational<IntLikeType> &anotherRational) {
+            Rational<IntLikeType> leftRational = simplify();
+            Rational<IntLikeType> rightRational = anotherRational.simplify();
+
+            return (leftRational.getNumerator() != rightRational.getNumerator() ||
+                    leftRational.getDenominator() != rightRational.getDenominator());
+        }
+
+        /**
+        * @brief Different comparison between a rational and a non-rational. Example: Rational != int
+        * @tparam U
+        * @param nonRational
+        * @return True if the rational is different to the second operand
+        */
+        template<typename U>
+        inline bool operator!=(const U &nonRational) { return Rational<IntLikeType>(nonRational) != *this; }
+
+        /**
+         * @brief Different comparison between a non-rational and a rational. Example: int != Rational
+         * @tparam U
+         * @param nonRational
+         * @param rational
+         * @return True if the non-rational is different to the rational
+         */
+        template<typename U>
+        inline friend bool operator!=(U nonRational, const Rational<IntLikeType> &rational) {
+            return Rational<IntLikeType>(nonRational) != rational;
+        }
 
         /************************************************************************************************************
          *********************************************** OPERATOR < *************************************************
@@ -320,8 +360,9 @@ namespace Arkulib {
          * @return True if the first rational is inferior to the second
          */
         inline bool operator<(const Rational<IntLikeType> &anotherRational) {
-            double firstRatio = (float) getNumerator() / getDenominator();
-            double secondRatio = (float) anotherRational.getNumerator() / anotherRational.getDenominator();
+            //ToDo Passer par autre chose qu'un double?
+            double firstRatio = (double) getNumerator() / getDenominator();
+            double secondRatio = (double) anotherRational.getNumerator() / anotherRational.getDenominator();
             return (firstRatio < secondRatio);
         }
 
@@ -332,7 +373,7 @@ namespace Arkulib {
          * @return True if the rational is inferior to the second operand
          */
         template<typename U>
-        inline bool operator<(const U &nonRational) { return *this < Rational(nonRational); }
+        inline bool operator<(const U &nonRational) { return *this < Rational<IntLikeType>(nonRational); }
 
         /**
          * @brief < Comparison between a non-rational and a rational. Example: int < Rational
@@ -343,12 +384,45 @@ namespace Arkulib {
          */
         template<typename U>
         inline friend bool operator<(U nonRational, const Rational<IntLikeType> &rational) {
-            return Rational(nonRational) < rational;
+            return Rational<IntLikeType>(nonRational) < rational;
         }
 
         /************************************************************************************************************
          *********************************************** OPERATOR <= *************************************************
          ************************************************************************************************************/
+
+        /**
+         * @brief <= Comparison between 2 rationals
+         * @param anotherRational
+         * @return True if the first rational is inferior to the second
+         */
+        inline bool operator<=(const Rational<IntLikeType> &anotherRational) {
+            //ToDo Passer par autre chose qu'un double?
+            double firstRatio = (double) getNumerator() / getDenominator();
+            double secondRatio = (double) anotherRational.getNumerator() / anotherRational.getDenominator();
+            return (firstRatio <= secondRatio);
+        }
+
+        /**
+         * @brief <= Comparison between a rational and a non-rational. Example: Rational <= int
+         * @tparam U
+         * @param nonRational
+         * @return True if the rational is inferior to the second operand
+         */
+        template<typename U>
+        inline bool operator<=(const U &nonRational) { return *this <= Rational<IntLikeType>(nonRational); }
+
+        /**
+         * @brief <= Comparison between a non-rational and a rational. Example: int <= Rational
+         * @tparam U
+         * @param nonRational
+         * @param rational
+         * @return True if the non-rational is inferior to the rational
+         */
+        template<typename U>
+        inline friend bool operator<=(U nonRational, const Rational<IntLikeType> &rational) {
+            return Rational<IntLikeType>(nonRational) <= rational;
+        }
 
         /************************************************************************************************************
          *********************************************** OPERATOR > *************************************************
@@ -360,8 +434,9 @@ namespace Arkulib {
          * @return True if the first rational is inferior to the second
          */
         inline bool operator>(const Rational<IntLikeType> &anotherRational) {
-            return (getNumerator() / getDenominator() >
-                    anotherRational.getNumerator() / anotherRational.getDenominator());
+            double firstRatio = (double) getNumerator() / getDenominator();
+            double secondRatio = (double) anotherRational.getNumerator() / anotherRational.getDenominator();
+            return (firstRatio > secondRatio);
         }
 
         /**
@@ -371,7 +446,7 @@ namespace Arkulib {
          * @return True if the rational is inferior to the second operand
          */
         template<typename U>
-        inline bool operator>(const U &nonRational) { return *this > Rational(nonRational); }
+        inline bool operator>(const U &nonRational) { return *this > Rational<IntLikeType>(nonRational); }
 
         /**
          * @brief < Comparison between a non-rational and a rational. Example: int > Rational
@@ -382,16 +457,70 @@ namespace Arkulib {
          */
         template<typename U>
         inline friend bool operator>(U nonRational, const Rational<IntLikeType> &rational) {
-            return Rational(nonRational) > rational;
+            return Rational<IntLikeType>(nonRational) > rational;
         }
 
         /************************************************************************************************************
          *********************************************** OPERATOR >= *************************************************
          ************************************************************************************************************/
 
+        /**
+         * @brief >= Comparison between 2 rationals
+         * @param anotherRational
+         * @return True if the first rational is inferior to the second
+         */
+        inline bool operator>=(const Rational<IntLikeType> &anotherRational) {
+            double firstRatio = (double) getNumerator() / getDenominator();
+            double secondRatio = (double) anotherRational.getNumerator() / anotherRational.getDenominator();
+            return (firstRatio >= secondRatio);
+        }
+
+        /**
+         * @brief >= Comparison between a rational and a non-rational. Example: Rational >= int
+         * @tparam U
+         * @param nonRational
+         * @return True if the rational is inferior to the second operand
+         */
+        template<typename U>
+        inline bool operator>=(const U &nonRational) { return *this >= Rational<IntLikeType>(nonRational); }
+
+        /**
+         * @brief < Comparison between a non-rational and a rational. Example: int >= Rational
+         * @tparam U
+         * @param nonRational
+         * @param rational
+         * @return True if the non-rational is superior to the rational
+         */
+        template<typename U>
+        inline friend bool operator>=(U nonRational, const Rational<IntLikeType> &rational) {
+            return Rational<IntLikeType>(nonRational) >= rational;
+        }
+
         /************************************************************************************************************
          *********************************************** OPERATOR += ************************************************
          ************************************************************************************************************/
+
+        /**
+         * @brief Addition assignment operation between 2 rationals
+         * @param anotherRational
+         * @return The sum in Rational
+         */
+        Rational<IntLikeType> operator+=(const Rational<IntLikeType> &anotherRational) {
+            *this = *this + anotherRational;
+            return *this;
+        }
+
+        /**
+         * @brief Addition assignment operation between a rational and another type. Example: Rational + int
+         * @tparam U
+         * @param nonRational
+         * @return The sum assigment in Rational
+         */
+        template<typename U>
+        inline Rational<IntLikeType> operator+=(const U &nonRational) {
+            *this = *this + Rational<IntLikeType>(nonRational);
+            return *this;
+        }
 
         /************************************************************************************************************
          *********************************************** OPERATOR -= ************************************************
@@ -441,11 +570,15 @@ namespace Arkulib {
         */
         [[maybe_unused]] constexpr Rational<IntLikeType> pow(double k) const;
 
+        /**
+         * @brief Give the abs of a rational
+         * @return The Rational in absolute value
+         */
         [[maybe_unused]] constexpr inline Rational<IntLikeType> abs() const {
             return Rational<IntLikeType>(std::abs(m_numerator), std::abs(m_denominator));
         };
 
-        //ToDo: Peut-être une fonction qui permet de simplifier le rationel ? Si c'est faisable, genre qui renvoie une approximation plus simple
+        //ToDo: Peut-être une fonction qui permet de simplifier le rationnel ? Si c'est faisable, genre qui renvoie une approximation plus simple
         //ToDo: ...
 
         /**
@@ -479,7 +612,8 @@ namespace Arkulib {
          * @brief Return an approximation of +infinite in Rational Type
          * @return 1 as numerator and 0 as denominator
          */
-        inline constexpr static Rational<IntLikeType> Infinite() noexcept { return Rational<IntLikeType>(1, 0); }
+        [[maybe_unused]] inline constexpr static Rational<IntLikeType>
+        Infinite() noexcept { return Rational<IntLikeType>(1, 0); }
 
         /************************************************************************************************************
          *********************************************** CONVERSION *************************************************
@@ -489,7 +623,9 @@ namespace Arkulib {
          * @brief Get the integer part of the ratio
          * @return An int (type IntLikeType)
          */
-        [[nodiscard]] inline constexpr IntLikeType toInteger() const noexcept { return IntLikeType(m_numerator / m_denominator); }
+        [[nodiscard]] inline constexpr IntLikeType toInteger() const noexcept {
+            return IntLikeType(m_numerator / m_denominator);
+        }
 
         /**
          * @brief Get an approximation floating point number of the ratio
@@ -515,7 +651,7 @@ namespace Arkulib {
          * @return
          */
         template<typename FloatLikeType = double>
-        [[nodiscard]] constexpr Rational<IntLikeType> fromFloat(FloatLikeType floatingRatio, size_t iter) const;
+        [[nodiscard]] constexpr Rational<IntLikeType> fromFloatingPoint(FloatLikeType floatingRatio, size_t iter) const;
 
     private:
         /************************************************************************************************************
@@ -526,6 +662,22 @@ namespace Arkulib {
 
         IntLikeType m_denominator; /*!< Rational's denominator */
 
+        /************************************************************************************************************
+         ********************************************* METHODS ******************************************************
+         ************************************************************************************************************/
+
+        constexpr inline void verifyTemplateType() const {
+            if (!std::is_integral<IntLikeType>()) throw Exceptions::FloatTypeGiven();
+        };
+
+        constexpr inline void verifyDenominator(const IntLikeType denominator) {
+            if (denominator == static_cast<IntLikeType>(0)) throw Exceptions::DivideByZeroException();
+
+            if (denominator < static_cast<IntLikeType>(0)) {
+                m_numerator = -m_numerator;
+                m_denominator = -denominator;
+            }
+        }
     };
 
     /************************************************************************************************************
@@ -630,23 +782,26 @@ namespace Arkulib {
 
     template<typename IntLikeType>
     template<typename FloatLikeType>
-    Rational<IntLikeType> constexpr Rational<IntLikeType>::fromFloat(const FloatLikeType floatingRatio, const size_t iter) const {
+    Rational<IntLikeType> constexpr
+    Rational<IntLikeType>::fromFloatingPoint(const FloatLikeType floatingRatio, size_t iter) const {
+        //ToDo: Throw une except si n ou d supérieur à max
         //ToDo: Trouver un moyen de pas utiliser de paramètres iter
-        if (floatingRatio < 0) {
-            return -fromFloat(-floatingRatio, iter);
+        if (floatingRatio < static_cast<FloatLikeType>(0)) {
+            return -fromFloatingPoint(-floatingRatio, iter);
         }
 
-        const double threshold = 0.01;
-        if (floatingRatio <= 0 + threshold || iter == 0) {
+        const auto THRESHOLD = static_cast<FloatLikeType>(0.01);
+        if (floatingRatio <= 0 + THRESHOLD || iter == 0) {
             return Rational<IntLikeType>::Zero();
         }
 
-        if (floatingRatio < 1) {
-            return fromFloat(1. / floatingRatio, iter).inverse();
+        if (floatingRatio < static_cast<FloatLikeType>(1)) {
+            return fromFloatingPoint(static_cast<FloatLikeType>(1) / floatingRatio, iter).inverse();
         }
 
-        IntLikeType integerPart = int(floatingRatio);
-        return fromFloat(floatingRatio - integerPart, iter - 1) + Arkulib::Rational<IntLikeType>(integerPart, 1);
+        IntLikeType integerPart = IntLikeType(floatingRatio);
+        return fromFloatingPoint(floatingRatio - integerPart, iter - 1)
+               + Arkulib::Rational<IntLikeType>(integerPart, static_cast<IntLikeType>(1));
     }
 
     /************************************************************************************************************

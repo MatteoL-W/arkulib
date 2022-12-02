@@ -55,9 +55,19 @@ TEST (ArkulibConstructor, ConstructorsCoherency) {
     r4.setNumerator(1);
     r4.setDenominator(4);
 
-    //ToDo: Maybe test with some unwanted types?
-
     ASSERT_TRUE (r1 == r2);
     ASSERT_TRUE (r1 == r3);
     ASSERT_TRUE (r1 == r4);
+}
+
+TEST (ArkulibConstructor, UnwantedTypes) {
+    EXPECT_THROW({
+                     try {
+                         Arkulib::Rational<float> r1;
+                     }
+                     catch (const Arkulib::Exceptions::FloatTypeGiven &e) {
+                         EXPECT_STREQ("The type given to a rational must not be a floating point.", e.what());
+                         throw;
+                     }
+                 }, Arkulib::Exceptions::FloatTypeGiven);
 }

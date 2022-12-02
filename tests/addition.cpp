@@ -50,8 +50,23 @@ TEST (ArkulibPlusOperation, RationalsAndOne) {
 }
 
 TEST (ArkulibPlusOperation, BigRationals) {
+    //ToDo Refaire après qu'on ait fix le problème des grands rationnels
     Arkulib::Rational r1(1000, 3);
     Arkulib::Rational r2(3000, 2999);
 
     ASSERT_EQ (r1 + r2, Arkulib::Rational(3008000, 8997));
+}
+
+TEST (ArkulibPlusOperation, AdditionAssignment) {
+    Arkulib::Rational r1(1, 4);
+    r1 += Arkulib::Rational(2, 3);
+
+    ASSERT_EQ (r1, Arkulib::Rational(11, 12));
+}
+
+TEST (ArkulibPlusOperation, AdditionAssignment2) {
+    Arkulib::Rational r1(1, 4);
+    r1 += 1;
+
+    ASSERT_EQ (r1, Arkulib::Rational(5, 4));
 }
