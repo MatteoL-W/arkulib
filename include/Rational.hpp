@@ -636,7 +636,9 @@ namespace Arkulib {
         * @brief Give the power of a rational
         * @return The power as a Rational
         */
-        [[maybe_unused]] constexpr Rational<IntLikeType> pow(double k) const;
+
+        template<typename FloatLikeType>
+        [[maybe_unused]] constexpr Rational<IntLikeType> pow(const FloatLikeType &k) const;
 
         /**
          * @brief Give the abs of a rational
@@ -824,9 +826,11 @@ namespace Arkulib {
         );
     }
 
+
     template<typename IntLikeType>
-    //ToDo: May be optimised !!!!!!!! + Remove integer() function
-    Rational<IntLikeType> constexpr Rational<IntLikeType>::pow(const double k) const {
+    template<typename FloatLikeType>
+    //ToDo: May be optimised !!!!!!!!
+    Rational<IntLikeType> constexpr Rational<IntLikeType>::pow(const FloatLikeType &k) const {
         return Rational<IntLikeType>(
                 std::pow(double(m_numerator) / m_denominator, k)
         );
