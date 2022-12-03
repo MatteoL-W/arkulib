@@ -526,13 +526,81 @@ namespace Arkulib {
          *********************************************** OPERATOR -= ************************************************
          ************************************************************************************************************/
 
+        /**
+         * @brief Subtraction assignment operation between 2 rationals
+         * @param anotherRational
+         * @return The subtraction in Rational
+         */
+        Rational<IntLikeType> operator-=(const Rational<IntLikeType> &anotherRational) {
+            *this = *this - anotherRational;
+            return *this;
+        }
+
+        /**
+         * @brief Subtraction assignment operation between a rational and another type. Example: Rational - int
+         * @tparam U
+         * @param nonRational
+         * @return The subtraction assigment in Rational
+         */
+        template<typename U>
+        inline Rational<IntLikeType> operator-=(const U &nonRational) {
+            *this = *this - Rational<IntLikeType>(nonRational);
+            return *this;
+        }
+
         /************************************************************************************************************
          *********************************************** OPERATOR *= ************************************************
          ************************************************************************************************************/
 
+        /**
+         * @brief Multiplication assignment operation between 2 rationals
+         * @param anotherRational
+         * @return The multiplication in Rational
+         */
+        Rational<IntLikeType> operator*=(const Rational<IntLikeType> &anotherRational) {
+            *this = *this * anotherRational;
+            return *this;
+        }
+
+        /**
+         * @brief Multiplication assignment operation between a rational and another type. Example: Rational * int
+         * @tparam U
+         * @param nonRational
+         * @return The multiplication assigment in Rational
+         */
+        template<typename U>
+        inline Rational<IntLikeType> operator*=(const U &nonRational) {
+            *this = *this * Rational<IntLikeType>(nonRational);
+            return *this;
+        }
+
         /************************************************************************************************************
          *********************************************** OPERATOR /= ************************************************
          ************************************************************************************************************/
+
+
+        /**
+         * @brief Division assignment operation between 2 rationals
+         * @param anotherRational
+         * @return The division in Rational
+         */
+        Rational<IntLikeType> operator/=(const Rational<IntLikeType> &anotherRational) {
+            *this = *this / anotherRational;
+            return *this;
+        }
+
+        /**
+         * @brief Multiplication assignment operation between a rational and another type. Example: Rational * int
+         * @tparam U
+         * @param nonRational
+         * @return The multiplication assigment in Rational
+         */
+        template<typename U>
+        inline Rational<IntLikeType> operator/=(const U &nonRational) {
+            *this = *this / Rational<IntLikeType>(nonRational);
+            return *this;
+        }
+
 
         /************************************************************************************************************
          ************************************************* MATHS ****************************************************

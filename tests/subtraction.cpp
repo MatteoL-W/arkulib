@@ -52,3 +52,18 @@ TEST (ArkulibMinusOperation, BigRationals) {
 
     ASSERT_EQ (r1 - r2, Arkulib::Rational(2496750, 1999));
 }
+
+
+TEST (ArkulibMinusOperation, SubtractionAssignment) {
+    Arkulib::Rational r1(1, 6);
+    r1 -= Arkulib::Rational(4, 9);
+
+    ASSERT_EQ (r1, Arkulib::Rational(-15, 54));
+}
+
+TEST (ArkulibMinusOperation, AdditionAssignment2) {
+    Arkulib::Rational r1(6, 7);
+    r1 += 1;
+
+    ASSERT_EQ (r1, Arkulib::Rational(13, 7));
+}

@@ -59,3 +59,17 @@ TEST (ArkulibDivideOperation, BigRationals) {
 
     ASSERT_EQ (r1 / r2, Arkulib::Rational(342000, 192));
 }
+
+TEST (ArkulibDivisionOperation, DivisionAssignment) {
+    Arkulib::Rational r1(1, 2);
+    r1 /= Arkulib::Rational(3, 4);
+
+    ASSERT_EQ (r1, Arkulib::Rational(2, 3));
+}
+
+TEST (ArkulibDivisionOperation, DivisionAssignment2) {
+    Arkulib::Rational r1(6, 5);
+    r1 /= 1;
+
+    ASSERT_EQ (r1, Arkulib::Rational(6, 5));
+}

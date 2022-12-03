@@ -52,3 +52,17 @@ TEST (ArkulibTimeOperation, BigRationals) {
 
     ASSERT_EQ (r1 * r2, Arkulib::Rational(221125, 2869));
 }
+
+TEST (ArkulibTimeOperation, MultiplicationAssignment) {
+    Arkulib::Rational r1(2, 5);
+    r1 *= Arkulib::Rational(11, 3);
+
+    ASSERT_EQ (r1, Arkulib::Rational(22, 15));
+}
+
+TEST (ArkulibTimeOperation, MultiplicationAssignment2) {
+    Arkulib::Rational r1(7, 8);
+    r1 *= 1;
+
+    ASSERT_EQ (r1, Arkulib::Rational(7, 8));
+}
