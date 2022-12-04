@@ -858,22 +858,24 @@ namespace Arkulib {
     Rational<IntLikeType>::fromFloatingPoint(const FloatLikeType floatingRatio, size_t iter) const {
         //ToDo: Throw une except si n ou d supérieur à max
         //ToDo: Trouver un moyen de pas utiliser de paramètres iter
-        if (floatingRatio < static_cast<FloatLikeType>(0)) {
+        const FloatLikeType ZERO = 0;
+        const FloatLikeType ONE = 1;
+
+        if (floatingRatio < ZERO) {
             return -fromFloatingPoint(-floatingRatio, iter);
         }
 
-        const auto THRESHOLD = static_cast<FloatLikeType>(0.01);
-        if (floatingRatio <= 0 + THRESHOLD || iter == 0) {
+        if (floatingRatio <= ZERO + static_cast<FloatLikeType>(0.01) || iter == 0) {
             return Rational<IntLikeType>::Zero();
         }
 
         if (floatingRatio < static_cast<FloatLikeType>(1)) {
-            return fromFloatingPoint(static_cast<FloatLikeType>(1) / floatingRatio, iter).inverse();
+            return fromFloatingPoint(ONE / floatingRatio, iter).inverse();
         }
 
         IntLikeType integerPart = IntLikeType(floatingRatio);
         return fromFloatingPoint(floatingRatio - integerPart, iter - 1)
-               + Arkulib::Rational<IntLikeType>(integerPart, static_cast<IntLikeType>(1));
+               + Arkulib::Rational<IntLikeType>(integerPart, ONE);
     }
 
     /************************************************************************************************************
