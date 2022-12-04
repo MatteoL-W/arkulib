@@ -503,7 +503,7 @@ namespace Arkulib {
         /**
          * @brief Addition assignment operation between 2 rationals
          * @param anotherRational
-         * @return The sum in Rational
+         * @return The sum assignment in Rational
          */
         Rational<IntLikeType> operator+=(const Rational<IntLikeType> &anotherRational) {
             *this = *this + anotherRational;
@@ -511,7 +511,7 @@ namespace Arkulib {
         }
 
         /**
-         * @brief Addition assignment operation between a rational and another type. Example: Rational + int
+         * @brief Addition assignment operation between a rational and another type. Example: Rational += int
          * @tparam U
          * @param nonRational
          * @return The sum assigment in Rational
