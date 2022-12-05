@@ -12,6 +12,7 @@
 #include <fstream>
 #include <iostream>
 #include <numeric>
+#include <limits>
 
 #include "Exceptions/Exceptions.hpp"
 
@@ -61,6 +62,15 @@ namespace Arkulib {
         template<typename U>
         inline constexpr explicit Rational(const U &nonRational) {
             verifyTemplateType();
+
+            Rational<long long int> tmpRational = Rational<long long int>::Zero();
+            tmpRational = tmpRational.fromFloatingPoint(nonRational, 10);
+
+            if (std::numeric_limits<IntLikeType>::max() < tmpRational.getLargerOperand() ||
+                std::numeric_limits<IntLikeType>::lowest() > tmpRational.getLowerOperand() ) {
+                throw Arkulib::Exceptions::NumberTooLargeException();
+            }
+
             *this = fromFloatingPoint(nonRational, 10);
         }
 
@@ -76,6 +86,16 @@ namespace Arkulib {
         [[nodiscard]] inline IntLikeType getNumerator() const noexcept { return m_numerator; }
 
         [[nodiscard]] inline IntLikeType getDenominator() const noexcept { return m_denominator; }
+
+        /**
+         * @return The numerator if numerator > denominator. Return denominator else.
+         */
+        constexpr inline IntLikeType getLargerOperand() { return std::max(m_numerator, m_denominator);}
+
+        /**
+         * @return The denominator if numerator > denominator. Return numerator else.
+         */
+        constexpr inline IntLikeType getLowerOperand() { return std::min(m_numerator, m_denominator);}
 
         /**
          * @brief Getter with [] operator
@@ -736,10 +756,17 @@ namespace Arkulib {
          ********************************************* METHODS ******************************************************
          ************************************************************************************************************/
 
+        /**
+         * @brief Throw exception if the rational type is not an integer
+         */
         constexpr inline void verifyTemplateType() const {
-            if (!std::is_integral<IntLikeType>()) throw Exceptions::FloatTypeGiven();
+            if (!std::is_integral<IntLikeType>()) throw Exceptions::FloatTypeGivenException();
         };
 
+        /**
+         * @brief Verify if the denominator is not 0 and correct if the denominator is negative
+         * @param denominator
+         */
         constexpr inline void verifyDenominator(const IntLikeType denominator) {
             if (denominator == static_cast<IntLikeType>(0)) throw Exceptions::DivideByZeroException();
 

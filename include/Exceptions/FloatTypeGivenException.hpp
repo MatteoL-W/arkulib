@@ -12,8 +12,8 @@ namespace Arkulib::Exceptions {
     /**
      * @brief An exception to handle Rational expressed in a non integer type
      */
-    class FloatTypeGiven : public std::invalid_argument {
+    class FloatTypeGivenException : public std::invalid_argument {
     public:
-        inline FloatTypeGiven() : std::invalid_argument("The type given to a rational must not be a floating point.") {}
+        inline FloatTypeGivenException() : std::invalid_argument("The type given to a rational must not be a floating point.") {}
     };
 }
