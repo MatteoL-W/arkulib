@@ -124,6 +124,16 @@ namespace Arkulib {
             else { throw Arkulib::Exceptions::InvalidAccessArgument(); }
         }
 
+        /**
+         * @return True if the big number management is on safe mode
+         */
+        [[nodiscard]] inline static bool isUsingSafeMode() { return m_bigNumberManagement == BigNumber::Modes::Safe; }
+
+        /**
+         * @return True if the big number management is on experimental mode
+         */
+        [[nodiscard]] inline static bool isUsingExpMode() { return m_bigNumberManagement == BigNumber::Modes::Experimental; }
+
         /************************************************************************************************************
          ************************************************ SETTERS ***************************************************
          ************************************************************************************************************/
@@ -144,6 +154,16 @@ namespace Arkulib {
             else if (id == 1) { return m_denominator; }
             else { throw Arkulib::Exceptions::InvalidAccessArgument(); }
         }
+
+        /**
+         * @return Set arkulib big number management on safe mode
+         */
+        inline static void setSafeMode() { m_bigNumberManagement = BigNumber::Modes::Safe; }
+
+        /**
+         * @return Set arkulib big number management on experimental mode
+         */
+        inline static void setExpMode() { m_bigNumberManagement = BigNumber::Modes::Experimental; }
 
         /************************************************************************************************************
          ************************************************* STATUS ***************************************************
@@ -768,7 +788,9 @@ namespace Arkulib {
 
         IntLikeType m_denominator; /*!< Rational's denominator */
 
-        BigNumber::Modes bigNumberManagement = BigNumber::Modes::Safe; /*!< Big Number Management Mode */
+        inline static BigNumber::Modes m_bigNumberManagement = BigNumber::Modes::Safe; /*!< Big Number Management Mode */
+
+        long long int multiplier; /*!< Multiplier, used only in the big number experimental management */
 
         /************************************************************************************************************
          ********************************************* METHODS ******************************************************
@@ -959,4 +981,5 @@ namespace Arkulib {
         return stream << rational.toString();
     }
     //ToDo Rename tous les templates U
+
 }
