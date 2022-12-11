@@ -132,7 +132,9 @@ namespace Arkulib {
         /**
          * @return True if the big number management is on experimental mode
          */
-        [[nodiscard]] inline static bool isUsingExpMode() { return m_bigNumberManagement == BigNumber::Modes::Experimental; }
+        [[nodiscard]] inline static bool isUsingExpMode() {
+            return m_bigNumberManagement == BigNumber::Modes::Experimental;
+        }
 
         /************************************************************************************************************
          ************************************************ SETTERS ***************************************************
@@ -964,10 +966,15 @@ namespace Arkulib {
     void Rational<IntLikeType>::verifyNumberLargeness(
             Rational<AnotherIntLikeType> &anotherRational
     ) const {
-        // If the value of the other rational is above the limits of IntLikeType
-        if (std::numeric_limits<IntLikeType>::max() < anotherRational.getLargerOperand() ||
-            std::numeric_limits<IntLikeType>::lowest() > anotherRational.getLowerOperand()) {
+        // If the value of the other rational is above the limits of IntLikeType and in safe mode
+        if ((std::numeric_limits<IntLikeType>::max() < anotherRational.getLargerOperand() ||
+             std::numeric_limits<IntLikeType>::lowest() > anotherRational.getLowerOperand()) && isUsingSafeMode()) {
             throw Exceptions::NumberTooLargeException();
+        }
+
+        if (anotherRational.getNumerator() > std::numeric_limits<IntLikeType>::max()) {
+            int numberLength = trunc(log10(anotherRational.getNumerator()));
+            m_numerator = anotherRational.getNumerator() * std::pow(10, -numberLength);
         }
     }
 
