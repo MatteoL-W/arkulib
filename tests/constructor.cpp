@@ -1,6 +1,9 @@
 #include <gtest/gtest.h>
 #include "../include/Rational.hpp"
 
+//ToDo Exception on > to INT_MAX
+//ToDo Constructor with another type
+
 TEST (ArkulibConstructor, NumeratorAndDenominator) {
     Arkulib::Rational r1(10, 5);
     Arkulib::Rational r2{10, 5};

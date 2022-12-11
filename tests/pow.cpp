@@ -34,8 +34,8 @@ TEST (ArkulibPowOperation, PowZeroAndOne) {
 }
 
 TEST (ArkulibPowOperation, PowTimePow) {
-    Arkulib::Rational r1(1, 5);
-    ASSERT_EQ (r1.pow(4).pow(2), r1.pow(2).pow(4));
+    Arkulib::Rational r1(10, 2);
+    ASSERT_EQ (r1.pow(4.).pow(2.), r1.pow(2.).pow(4.));
 }
 
 TEST (ArkulibPowOperation, BigRationals) {

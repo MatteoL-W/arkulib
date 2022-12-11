@@ -15,6 +15,7 @@
 #include <limits>
 
 #include "Exceptions/Exceptions.hpp"
+#include "Modes.hpp"
 
 namespace Arkulib {
     /**
@@ -41,10 +42,11 @@ namespace Arkulib {
          * @param denominator
          */
         inline constexpr Rational(const IntLikeType numerator, const IntLikeType denominator,
-                                  const bool willBeReduce = true)
+                                  const bool willBeReduce = true, const bool willDenominatorBeVerified = true)
                 : m_numerator(numerator), m_denominator(denominator) {
             verifyTemplateType();
-            verifyDenominator(denominator);
+            verifyDenominator(denominator, willDenominatorBeVerified);
+
             if (willBeReduce) *this = simplify();
         }
 
@@ -53,6 +55,18 @@ namespace Arkulib {
          * @param reference
          */
         inline constexpr Rational(const Rational<IntLikeType> &reference) = default;
+
+        /**
+         * @brief Copy constructor with another int type
+         * @tparam AnotherIntLikeType
+         * @param copiedRational
+         */
+        template<typename AnotherIntLikeType>
+        inline constexpr explicit Rational(Rational<AnotherIntLikeType> &copiedRational) {
+            verifyNumberLargeness(copiedRational);
+            m_numerator = copiedRational.getNumerator();
+            m_denominator = copiedRational.getDenominator();
+        }
 
         /**
          * @brief Create a rational from a floating number
@@ -66,12 +80,14 @@ namespace Arkulib {
             Rational<long long int> tmpRational = Rational<long long int>::Zero();
             tmpRational = tmpRational.fromFloatingPoint(nonRational, 10);
 
-            if (std::numeric_limits<IntLikeType>::max() < tmpRational.getLargerOperand() ||
-                std::numeric_limits<IntLikeType>::lowest() > tmpRational.getLowerOperand() ) {
-                throw Arkulib::Exceptions::NumberTooLargeException();
+            // ToDo Fonction arrondir ?
+            // Can't be handled by long long int
+            if (tmpRational.isZero() && std::round(nonRational * 10e4) / 10e4 != static_cast<U>(0)) {
+                // Because Very large number return 0
+                throw Exceptions::NumberTooLargeException();
             }
 
-            *this = fromFloatingPoint(nonRational, 10);
+            *this = Rational<IntLikeType>(tmpRational);
         }
 
         /**
@@ -90,12 +106,12 @@ namespace Arkulib {
         /**
          * @return The numerator if numerator > denominator. Return denominator else.
          */
-        constexpr inline IntLikeType getLargerOperand() { return std::max(m_numerator, m_denominator);}
+        constexpr inline IntLikeType getLargerOperand() { return std::max(m_numerator, m_denominator); }
 
         /**
          * @return The denominator if numerator > denominator. Return numerator else.
          */
-        constexpr inline IntLikeType getLowerOperand() { return std::min(m_numerator, m_denominator);}
+        constexpr inline IntLikeType getLowerOperand() { return std::min(m_numerator, m_denominator); }
 
         /**
          * @brief Getter with [] operator
@@ -630,7 +646,7 @@ namespace Arkulib {
          * @brief Inverse a rational : a / b into b / a
          * @return The inverted Rational
          */
-        [[maybe_unused]] constexpr inline Rational<IntLikeType> inverse() const {
+        [[maybe_unused]] [[nodiscard]] constexpr inline Rational<IntLikeType> inverse() const {
             return Rational<IntLikeType>(m_denominator, m_numerator);
         }
 
@@ -638,19 +654,19 @@ namespace Arkulib {
         * @brief Give the square root of a rational
         * @return The square root as a Rational
         */
-        [[maybe_unused]] constexpr Rational<IntLikeType> sqrt() const;
+        [[maybe_unused]] [[nodiscard]] constexpr Rational<IntLikeType> sqrt() const;
 
         /**
         * @brief Give the cosine of a rational
         * @return The cosine as a Rational
         */
-        [[maybe_unused]] constexpr Rational<IntLikeType> cos() const;
+        [[maybe_unused]] [[nodiscard]] constexpr Rational<IntLikeType> cos() const;
 
         /**
         * @brief Give the exponential of a rational
         * @return The exponential as a Rational
         */
-        [[maybe_unused]] constexpr Rational<IntLikeType> exp() const;
+        [[maybe_unused]] [[nodiscard]] constexpr Rational<IntLikeType> exp() const;
 
         /**
         * @brief Give the power of a rational
@@ -664,7 +680,7 @@ namespace Arkulib {
          * @brief Give the abs of a rational
          * @return The Rational in absolute value
          */
-        [[maybe_unused]] constexpr inline Rational<IntLikeType> abs() const {
+        [[maybe_unused]] [[nodiscard]] constexpr inline Rational<IntLikeType> abs() const {
             return Rational<IntLikeType>(std::abs(m_numerator), std::abs(m_denominator));
         };
 
@@ -696,14 +712,14 @@ namespace Arkulib {
          * @brief Return Pi in Rational Type
          * @return An approximation of Pi
          */
-        inline constexpr static Rational<IntLikeType> Pi() noexcept { return Rational<IntLikeType>(355, 113); }
+        inline constexpr static Rational<IntLikeType> Pi() noexcept { return Rational<IntLikeType>(355, 113, false); }
 
         /**
          * @brief Return an approximation of +infinite in Rational Type
          * @return 1 as numerator and 0 as denominator
          */
         [[maybe_unused]] inline constexpr static Rational<IntLikeType>
-        Infinite() noexcept { return Rational<IntLikeType>(1, 0); }
+        Infinite() noexcept { return Rational<IntLikeType>(1, 0, false, false); }
 
         /************************************************************************************************************
          *********************************************** CONVERSION *************************************************
@@ -752,6 +768,8 @@ namespace Arkulib {
 
         IntLikeType m_denominator; /*!< Rational's denominator */
 
+        BigNumber::Modes bigNumberManagement = BigNumber::Modes::Safe; /*!< Big Number Management Mode */
+
         /************************************************************************************************************
          ********************************************* METHODS ******************************************************
          ************************************************************************************************************/
@@ -767,14 +785,26 @@ namespace Arkulib {
          * @brief Verify if the denominator is not 0 and correct if the denominator is negative
          * @param denominator
          */
-        constexpr inline void verifyDenominator(const IntLikeType denominator) {
-            if (denominator == static_cast<IntLikeType>(0)) throw Exceptions::DivideByZeroException();
+        constexpr inline void verifyDenominator(
+                const IntLikeType denominator,
+                const bool willDenominatorBeVerified = true
+        ) {
+            if (denominator == static_cast<IntLikeType>(0) && willDenominatorBeVerified)
+                throw Exceptions::DivideByZeroException();
 
             if (denominator < static_cast<IntLikeType>(0)) {
                 m_numerator = -m_numerator;
                 m_denominator = -denominator;
             }
         }
+
+        /**
+         * @brief Verify if the operands are superior to the limit of IntLikeType
+         * @tparam AnotherIntLikeType
+         * @param anotherRational
+         */
+        template<typename AnotherIntLikeType>
+        void verifyNumberLargeness(Rational<AnotherIntLikeType> &anotherRational) const;
     };
 
     /************************************************************************************************************
@@ -881,8 +911,10 @@ namespace Arkulib {
 
     template<typename IntLikeType>
     template<typename FloatLikeType>
-    Rational<IntLikeType> constexpr
-    Rational<IntLikeType>::fromFloatingPoint(const FloatLikeType floatingRatio, size_t iter) const {
+    Rational<IntLikeType> constexpr Rational<IntLikeType>::fromFloatingPoint(
+            const FloatLikeType floatingRatio,
+            size_t iter
+    ) const {
         //ToDo: Throw une except si n ou d supérieur à max
         //ToDo: Trouver un moyen de pas utiliser de paramètres iter
         const FloatLikeType ZERO = 0;
@@ -905,13 +937,26 @@ namespace Arkulib {
                + Arkulib::Rational<IntLikeType>(integerPart, ONE);
     }
 
+    template<typename IntLikeType>
+    template<typename AnotherIntLikeType>
+    void Rational<IntLikeType>::verifyNumberLargeness(
+            Rational<AnotherIntLikeType> &anotherRational
+    ) const {
+        // If the value of the other rational is above the limits of IntLikeType
+        if (std::numeric_limits<IntLikeType>::max() < anotherRational.getLargerOperand() ||
+            std::numeric_limits<IntLikeType>::lowest() > anotherRational.getLowerOperand()) {
+            throw Exceptions::NumberTooLargeException();
+        }
+    }
+
     /************************************************************************************************************
      ******************************************* STD::COUT OVERRIDE *********************************************
      ************************************************************************************************************/
 
+    // ToDo std::cout avec long long int
     template<typename IntLikeType>
     std::ostream &operator<<(std::ostream &stream, const Arkulib::Rational<IntLikeType> &rational) {
         return stream << rational.toString();
     }
-
+    //ToDo Rename tous les templates U
 }

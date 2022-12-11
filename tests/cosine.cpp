@@ -18,8 +18,8 @@ TEST (ArkulibCosineOperation, CosineAndPi) {
     Arkulib::Rational r1 = Arkulib::Rational<int>::Pi();
     ASSERT_TRUE (r1.cos() == -1);
 
-    Arkulib::Rational r2 = Arkulib::Rational<int>::Pi() * Arkulib::Rational(1, 2);
-    ASSERT_TRUE (r2.cos() == 0);
+    Arkulib::Rational r2 = r1 * Arkulib::Rational(1, 2);
+    ASSERT_NEAR (r2.cos().toRealNumber(), 0, 0.1);
 }
 
 TEST (ArkulibCosineOperation, BigRationals) {
