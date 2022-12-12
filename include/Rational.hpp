@@ -15,7 +15,6 @@
 #include <limits>
 
 #include "Exceptions/Exceptions.hpp"
-#include "Modes.hpp"
 
 namespace Arkulib {
     /**
@@ -99,9 +98,9 @@ namespace Arkulib {
          ************************************************ GETTERS ***************************************************
          ************************************************************************************************************/
 
-        [[nodiscard]] inline IntLikeType getNumerator() const noexcept { return m_numerator; }
+        [[nodiscard]] virtual inline IntLikeType getNumerator() const noexcept { return m_numerator; }
 
-        [[nodiscard]] inline IntLikeType getDenominator() const noexcept { return m_denominator; }
+        [[nodiscard]] virtual inline IntLikeType getDenominator() const noexcept { return m_denominator; }
 
         /**
          * @return The numerator if numerator > denominator. Return denominator else.
@@ -124,18 +123,6 @@ namespace Arkulib {
             else { throw Arkulib::Exceptions::InvalidAccessArgument(); }
         }
 
-        /**
-         * @return True if the big number management is on safe mode
-         */
-        [[nodiscard]] inline static bool isUsingSafeMode() { return m_bigNumberManagement == BigNumber::Modes::Safe; }
-
-        /**
-         * @return True if the big number management is on experimental mode
-         */
-        [[nodiscard]] inline static bool isUsingExpMode() {
-            return m_bigNumberManagement == BigNumber::Modes::Experimental;
-        }
-
         /************************************************************************************************************
          ************************************************ SETTERS ***************************************************
          ************************************************************************************************************/
@@ -156,16 +143,6 @@ namespace Arkulib {
             else if (id == 1) { return m_denominator; }
             else { throw Arkulib::Exceptions::InvalidAccessArgument(); }
         }
-
-        /**
-         * @return Set arkulib big number management on safe mode
-         */
-        inline static void setSafeMode() { m_bigNumberManagement = BigNumber::Modes::Safe; }
-
-        /**
-         * @return Set arkulib big number management on experimental mode
-         */
-        inline static void setExpMode() { m_bigNumberManagement = BigNumber::Modes::Experimental; }
 
         /************************************************************************************************************
          ************************************************* STATUS ***************************************************
@@ -195,7 +172,7 @@ namespace Arkulib {
          * @param anotherRational
          * @return The sum in Rational
          */
-        Rational<IntLikeType> operator+(const Rational<IntLikeType> &anotherRational);
+        virtual Rational<IntLikeType> operator+(const Rational<IntLikeType> &anotherRational);
 
         /**
          * @brief Addition operation between a rational and another type. Example: Rational + int
@@ -740,8 +717,9 @@ namespace Arkulib {
          * @brief Return an approximation of +infinite in Rational Type
          * @return 1 as numerator and 0 as denominator
          */
-        [[maybe_unused]] inline constexpr static Rational<IntLikeType>
-        Infinite() noexcept { return Rational<IntLikeType>(1, 0, false, false); }
+        [[maybe_unused]] inline constexpr static Rational<IntLikeType> Infinite() noexcept {
+            return Rational<IntLikeType>(1, 0, false, false);
+        }
 
         /************************************************************************************************************
          *********************************************** CONVERSION *************************************************
@@ -781,7 +759,7 @@ namespace Arkulib {
         template<typename FloatLikeType = double>
         [[nodiscard]] constexpr Rational<IntLikeType> fromFloatingPoint(FloatLikeType floatingRatio, size_t iter) const;
 
-    private:
+    protected:
         /************************************************************************************************************
          ********************************************* MEMBERS ******************************************************
          ************************************************************************************************************/
@@ -790,10 +768,7 @@ namespace Arkulib {
 
         IntLikeType m_denominator; /*!< Rational's denominator */
 
-        inline static BigNumber::Modes m_bigNumberManagement = BigNumber::Modes::Safe; /*!< Big Number Management Mode */
-
-        long long int multiplier; /*!< Multiplier, used only in the big number experimental management */
-
+    private:
         /************************************************************************************************************
          ********************************************* METHODS ******************************************************
          ************************************************************************************************************/
@@ -966,15 +941,10 @@ namespace Arkulib {
     void Rational<IntLikeType>::verifyNumberLargeness(
             Rational<AnotherIntLikeType> &anotherRational
     ) const {
-        // If the value of the other rational is above the limits of IntLikeType and in safe mode
+        // If the value of the other rational is above the limits of IntLikeType
         if ((std::numeric_limits<IntLikeType>::max() < anotherRational.getLargerOperand() ||
-             std::numeric_limits<IntLikeType>::lowest() > anotherRational.getLowerOperand()) && isUsingSafeMode()) {
+             std::numeric_limits<IntLikeType>::lowest() > anotherRational.getLowerOperand())) {
             throw Exceptions::NumberTooLargeException();
-        }
-
-        if (anotherRational.getNumerator() > std::numeric_limits<IntLikeType>::max()) {
-            int numberLength = trunc(log10(anotherRational.getNumerator()));
-            m_numerator = anotherRational.getNumerator() * std::pow(10, -numberLength);
         }
     }
 
