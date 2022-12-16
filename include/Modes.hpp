@@ -7,8 +7,6 @@
  */
 
 namespace Arkulib::BigNumber {
-    enum class Modes {
-        Safe,
-        Experimental
-    };
+    struct Safe {};
+    struct Experimental {};
 }

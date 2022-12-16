@@ -13,6 +13,7 @@
 #include <iostream>
 #include <numeric>
 #include <limits>
+#include <variant>
 
 #include "Exceptions/Exceptions.hpp"
 #include "Modes.hpp"
@@ -63,9 +64,15 @@ namespace Arkulib {
          */
         template<typename AnotherIntLikeType>
         inline constexpr explicit Rational(Rational<AnotherIntLikeType> &copiedRational) {
-            verifyNumberLargeness(copiedRational);
-            m_numerator = copiedRational.getNumerator();
-            m_denominator = copiedRational.getDenominator();
+            if (isUsingSafeMode()) {
+                verifyNumberLargeness(copiedRational);
+                m_numerator = copiedRational.getNumerator();
+                m_denominator = copiedRational.getDenominator();
+            }
+
+            if (isUsingExpMode()) {
+                transformIntoExperimental(copiedRational);
+            }
         }
 
         /**
@@ -99,9 +106,19 @@ namespace Arkulib {
          ************************************************ GETTERS ***************************************************
          ************************************************************************************************************/
 
-        [[nodiscard]] inline IntLikeType getNumerator() const noexcept { return m_numerator; }
+        [[nodiscard]] inline IntLikeType getRawNumerator() const noexcept { return m_numerator; }
 
-        [[nodiscard]] inline IntLikeType getDenominator() const noexcept { return m_denominator; }
+        [[nodiscard]] inline IntLikeType getNumerator() const noexcept {
+            if (isUsingExpMode()) return m_numMultiplier * std::pow(10, m_numerator);
+            if (isUsingSafeMode()) return m_numerator;
+        }
+
+        [[nodiscard]] inline IntLikeType getRawDenominator() const noexcept { return m_denominator; }
+
+        [[nodiscard]] inline IntLikeType getDenominator() const noexcept {
+            if (isUsingExpMode()) return m_denMultiplier * std::pow(10, m_denominator);
+            if (isUsingSafeMode()) return m_denominator;
+        }
 
         /**
          * @return The numerator if numerator > denominator. Return denominator else.
@@ -127,12 +144,16 @@ namespace Arkulib {
         /**
          * @return True if the big number management is on safe mode
          */
-        [[nodiscard]] inline static bool isUsingSafeMode() { return m_bigNumberManagement == BigNumber::Modes::Safe; }
+        [[nodiscard]] inline static bool isUsingSafeMode() {
+            return std::holds_alternative<BigNumber::Safe>(m_bigNumberManagement);
+        }
 
         /**
          * @return True if the big number management is on experimental mode
          */
-        [[nodiscard]] inline static bool isUsingExpMode() { return m_bigNumberManagement == BigNumber::Modes::Experimental; }
+        [[nodiscard]] inline static bool isUsingExpMode() {
+            return std::holds_alternative<BigNumber::Experimental>(m_bigNumberManagement);
+        }
 
         /************************************************************************************************************
          ************************************************ SETTERS ***************************************************
@@ -158,12 +179,12 @@ namespace Arkulib {
         /**
          * @return Set arkulib big number management on safe mode
          */
-        inline static void setSafeMode() { m_bigNumberManagement = BigNumber::Modes::Safe; }
+        inline static void setSafeMode() { m_bigNumberManagement = BigNumber::Safe{}; }
 
         /**
          * @return Set arkulib big number management on experimental mode
          */
-        inline static void setExpMode() { m_bigNumberManagement = BigNumber::Modes::Experimental; }
+        inline static void setExpMode() { m_bigNumberManagement = BigNumber::Experimental{}; }
 
         /************************************************************************************************************
          ************************************************* STATUS ***************************************************
@@ -712,6 +733,13 @@ namespace Arkulib {
          */
         [[maybe_unused]] [[nodiscard]] constexpr Rational<IntLikeType> simplify() const noexcept;
 
+        /**
+         * @brief Transform a safe rational into an experimental rational
+         * @return
+         */
+        template<typename AnotherIntLikeType>
+        constexpr void transformIntoExperimental(Rational<AnotherIntLikeType> copiedRational);
+
         /************************************************************************************************************
          ************************************************* STATIC ***************************************************
          ************************************************************************************************************/
@@ -766,7 +794,8 @@ namespace Arkulib {
          * @return std::string
          */
         [[nodiscard]] inline std::string toString() const noexcept {
-            return "(" + std::to_string(getNumerator()) + " / " + std::to_string(getDenominator()) + ")";
+            if (isUsingSafeMode())
+                return "(" + std::to_string(getNumerator()) + " / " + std::to_string(getDenominator()) + ")";
         }
 
         /**
@@ -788,9 +817,11 @@ namespace Arkulib {
 
         IntLikeType m_denominator; /*!< Rational's denominator */
 
-        inline static BigNumber::Modes m_bigNumberManagement = BigNumber::Modes::Safe; /*!< Big Number Management Mode */
+        inline static std::variant<Arkulib::BigNumber::Safe,
+                Arkulib::BigNumber::Experimental> m_bigNumberManagement = Arkulib::BigNumber::Safe{}; /*!< Big Number Management Mode */
 
-        long long int multiplier; /*!< Multiplier, used only in the big number experimental management */
+        double m_numMultiplier; /*!< Numerator multiplier, used only in the big number experimental management */
+        double m_denMultiplier; /*!< Numerator multiplier, used only in the big number experimental management */
 
         /************************************************************************************************************
          ********************************************* METHODS ******************************************************
@@ -826,7 +857,7 @@ namespace Arkulib {
          * @param anotherRational
          */
         template<typename AnotherIntLikeType>
-        void verifyNumberLargeness(Rational<AnotherIntLikeType> &anotherRational) const;
+        void verifyNumberLargeness(Rational<AnotherIntLikeType> &anotherRational);
     };
 
     /************************************************************************************************************
@@ -939,8 +970,8 @@ namespace Arkulib {
     ) const {
         //ToDo: Throw une except si n ou d supérieur à max
         //ToDo: Trouver un moyen de pas utiliser de paramètres iter
-        const FloatLikeType ZERO = 0;
-        const FloatLikeType ONE = 1;
+        constexpr FloatLikeType ZERO = 0;
+        constexpr FloatLikeType ONE = 1;
 
         if (floatingRatio < ZERO) {
             return -fromFloatingPoint(-floatingRatio, iter);
@@ -963,12 +994,28 @@ namespace Arkulib {
     template<typename AnotherIntLikeType>
     void Rational<IntLikeType>::verifyNumberLargeness(
             Rational<AnotherIntLikeType> &anotherRational
-    ) const {
+    ) {
         // If the value of the other rational is above the limits of IntLikeType
-        if (std::numeric_limits<IntLikeType>::max() < anotherRational.getLargerOperand() ||
-            std::numeric_limits<IntLikeType>::lowest() > anotherRational.getLowerOperand()) {
+        if ((std::numeric_limits<IntLikeType>::max() < anotherRational.getLargerOperand() ||
+             std::numeric_limits<IntLikeType>::lowest() > anotherRational.getLowerOperand())) {
             throw Exceptions::NumberTooLargeException();
         }
+    }
+
+    template<typename IntLikeType>
+    template<typename AnotherIntLikeType>
+    constexpr void Rational<IntLikeType>::transformIntoExperimental(Rational<AnotherIntLikeType> copiedRational) {
+        Rational<AnotherIntLikeType> absCopiedRational = copiedRational.abs();
+        // This allows us to get the length of a number
+        const int numeratorLength = trunc(log10(absCopiedRational.getNumerator()));
+        const int denominatorLength = trunc(log10(absCopiedRational.getNumerator()));
+
+        m_numerator = numeratorLength;
+        m_numMultiplier = copiedRational.getNumerator() * std::pow(10, -numeratorLength);
+
+        m_denominator = denominatorLength;
+        m_denMultiplier = copiedRational.getDenominator() * std::pow(10, -denominatorLength);
+
     }
 
     /************************************************************************************************************
