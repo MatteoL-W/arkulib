@@ -14,6 +14,7 @@
 #include <numeric>
 
 #include "Exceptions/Exceptions.hpp"
+#include "Tools/Utils.hpp"
 
 namespace Arkulib {
     /**
@@ -91,12 +92,16 @@ namespace Arkulib {
         /**
          * @return The numerator if numerator > denominator. Return denominator else.
          */
-        [[maybe_unused]] [[nodiscard]] constexpr inline IntType getLargerOperand() { return std::max(m_numerator, m_denominator); }
+        [[maybe_unused]] [[nodiscard]] constexpr inline IntType getLargerOperand() {
+            return std::max(getNumerator(), getDenominator());
+        }
 
         /**
          * @return The denominator if numerator > denominator. Return numerator else.
          */
-        [[maybe_unused]] [[nodiscard]] constexpr inline IntType getLowerOperand() { return std::min(m_numerator, m_denominator); }
+        [[maybe_unused]] [[nodiscard]] constexpr inline IntType getLowerOperand() {
+            return std::min(getNumerator(), getDenominator());
+        }
 
         /************************************************************************************************************
          ************************************************ SETTERS ***************************************************
@@ -122,17 +127,17 @@ namespace Arkulib {
         /**
          * @return True if the rational is negative
          */
-        [[maybe_unused]] [[nodiscard]] inline bool isNegative() const { return m_numerator < 0; };
+        [[maybe_unused]] [[nodiscard]] inline bool isNegative() const { return getNumerator() < 0; };
 
         /**
          * @return True if the rational is an integer
          */
-        [[maybe_unused]] [[nodiscard]] inline bool isInteger() const { return m_denominator == 1; };
+        [[maybe_unused]] [[nodiscard]] inline bool isInteger() const { return getDenominator() == 1; };
 
         /**
          * @return True if the rational is equal to zero
          */
-        [[maybe_unused]] [[nodiscard]] inline bool isZero() const { return m_numerator == 0; };
+        [[maybe_unused]] [[nodiscard]] inline bool isZero() const { return getNumerator() == 0; };
 
         /************************************************************************************************************
          *********************************************** OPERATOR + *************************************************
@@ -631,7 +636,7 @@ namespace Arkulib {
          * @return The inverted Rational
          */
         [[maybe_unused]] [[nodiscard]] constexpr inline Rational<IntType> inverse() const {
-            return Rational<IntType>(m_denominator, m_numerator);
+            return Rational<IntType>(getDenominator(), getNumerator());
         }
 
         /**
@@ -665,11 +670,8 @@ namespace Arkulib {
          * @return The Rational in absolute value
          */
         [[maybe_unused]] [[nodiscard]] constexpr inline Rational<IntType> abs() const {
-            return Rational<IntType>(std::abs(m_numerator), std::abs(m_denominator));
+            return Rational<IntType>(std::abs(getNumerator()), std::abs(getDenominator()));
         };
-
-        //ToDo: Peut-être une fonction qui permet de simplifier le rationnel ? Si c'est faisable, genre qui renvoie une approximation plus simple
-        //ToDo: ...
 
         /**
          * @brief Simplify the Rational with GCD (called in constructor)
@@ -709,12 +711,14 @@ namespace Arkulib {
          *********************************************** CONVERSION *************************************************
          ************************************************************************************************************/
 
+        //ToDo Approximation
+
         /**
          * @brief Get the integer part of the ratio
          * @return An int (type IntType)
          */
         [[nodiscard]] inline constexpr IntType toInteger() const noexcept {
-            return IntType(m_numerator / m_denominator);
+            return IntType(getNumerator() / getDenominator());
         }
 
         /**
@@ -724,7 +728,7 @@ namespace Arkulib {
          */
         template<typename FloatingType = float>
         [[nodiscard]] inline constexpr FloatingType toRealNumber() const noexcept {
-            return m_numerator / FloatingType(m_denominator);
+            return getNumerator() / FloatingType(getDenominator());
         }
 
         /**
@@ -743,7 +747,9 @@ namespace Arkulib {
          * @return The rational wanted
          */
         template<typename FloatingType = double>
-        [[nodiscard]] constexpr Rational<IntType> fromFloatingPoint(FloatingType floatingRatio, size_t iter) const;
+        [[nodiscard]] static constexpr Rational<IntType> fromFloatingPoint(FloatingType floatingRatio, size_t iter);
+
+        //ToDo: Peut-être une fonction qui permet de simplifier le rationnel ? Si c'est faisable, genre qui renvoie une approximation plus simple
 
     private:
         /************************************************************************************************************
@@ -758,14 +764,20 @@ namespace Arkulib {
          ********************************************* METHODS ******************************************************
          ************************************************************************************************************/
 
+        /**
+         * @brief Verify if the template is correct
+         * @return an exception if the template is a floating point
+         */
         constexpr inline void verifyTemplateType() const {
             if (!std::is_integral<IntType>()) throw Exceptions::FloatTypeGivenException();
         };
 
-        constexpr inline void verifyDenominator(
-                const IntType denominator,
-                const bool checkIfDenominatorIsNull = true
-        );
+        /**
+         * @brief Verify if the denominator is null or negative
+         * @param denominator
+         * @param checkIfDenominatorIsNull
+         */
+        constexpr inline void verifyDenominator(IntType denominator, bool checkIfDenominatorIsNull = true);
 
         /**
          * @brief Verify if the operands are superior to the limit of IntType
@@ -794,8 +806,7 @@ namespace Arkulib {
             const IntType denominator,
             const bool willBeReduce,
             const bool willDenominatorBeVerified
-    ) : m_numerator(numerator), m_denominator(denominator)
-    {
+    ) : m_numerator(numerator), m_denominator(denominator) {
         verifyTemplateType();
         verifyDenominator(denominator, willDenominatorBeVerified);
         if (willBeReduce) *this = simplify();
@@ -807,12 +818,9 @@ namespace Arkulib {
     template<typename FloatingType>
     constexpr Rational<IntType>::Rational(const FloatingType &nonRational) {
         verifyTemplateType();
-        Rational<long long int> tmpRational = Rational<long long int>::Zero();
-        tmpRational = tmpRational.fromFloatingPoint(nonRational, 10);
+        Rational<long long int> tmpRational = Rational<long long int>::fromFloatingPoint(nonRational, 10);
 
-        // ToDo Fonction arrondir ?
-        // Can't be handled by long long int
-        if (tmpRational.isZero() && std::round(nonRational * 10e4) / 10e4 != static_cast<FloatingType>(0)) {
+        if (tmpRational.isZero() && Tools::roundToWantedPrecision(nonRational) != static_cast<FloatingType>(0)) {
             // Because Very large number return 0
             throw Exceptions::NumberTooLargeException();
         }
@@ -836,8 +844,8 @@ namespace Arkulib {
 
     template<typename IntType>
     const IntType &Rational<IntType>::operator[](const size_t &id) const {
-        if (id == 0) return m_numerator;
-        else if (id == 1) return m_denominator;
+        if (id == 0) return getNumerator();
+        else if (id == 1) return getDenominator();
         else throw Exceptions::InvalidAccessArgument();
     }
 
@@ -855,8 +863,8 @@ namespace Arkulib {
     template<typename IntType>
     Rational<IntType> Rational<IntType>::operator+(const Rational<IntType> &anotherRational) {
         return Rational<IntType>(
-                m_numerator * anotherRational.m_denominator + m_denominator * anotherRational.m_numerator,
-                m_denominator * anotherRational.m_denominator
+                getNumerator() * anotherRational.getDenominator() + getDenominator() * anotherRational.getNumerator(),
+                getDenominator() * anotherRational.getDenominator()
         );
     }
 
@@ -867,8 +875,8 @@ namespace Arkulib {
     template<typename IntType>
     Rational<IntType> Rational<IntType>::operator-(const Rational<IntType> &anotherRational) {
         return Rational<IntType>(
-                m_numerator * anotherRational.m_denominator - m_denominator * anotherRational.m_numerator,
-                m_denominator * anotherRational.m_denominator
+                getNumerator() * anotherRational.getDenominator() - getDenominator() * anotherRational.getNumerator(),
+                getDenominator() * anotherRational.getDenominator()
         );
     }
 
@@ -879,8 +887,8 @@ namespace Arkulib {
     template<typename IntType>
     Rational<IntType> Rational<IntType>::operator*(const Rational<IntType> &anotherRational) {
         return Rational<IntType>(
-                m_numerator * anotherRational.m_numerator,
-                m_denominator * anotherRational.m_denominator
+                getNumerator() * anotherRational.getNumerator(),
+                getDenominator() * anotherRational.getDenominator()
         );
     }
 
@@ -891,8 +899,8 @@ namespace Arkulib {
     template<typename IntType>
     Rational<IntType> Rational<IntType>::operator/(const Rational<IntType> &anotherRational) {
         return Rational<IntType>(
-                m_numerator * anotherRational.m_denominator,
-                m_denominator * anotherRational.m_numerator
+                getNumerator() * anotherRational.getDenominator(),
+                getDenominator() * anotherRational.getNumerator()
         );
     }
 
@@ -906,21 +914,21 @@ namespace Arkulib {
     constexpr Rational<IntType> Rational<IntType>::sqrt() const {
         if (isNegative()) throw Exceptions::NegativeSqrtException();
         return Rational<IntType>(
-                std::sqrt(double(m_numerator) / m_denominator)
+                std::sqrt(double(getNumerator()) / getDenominator())
         );
     }
 
     template<typename IntType>
     Rational<IntType> constexpr Rational<IntType>::cos() const {
         return Rational<IntType>(
-                std::cos(double(m_numerator) / m_denominator)
+                std::cos(double(getNumerator()) / getDenominator())
         );
     }
 
     template<typename IntType>
     Rational<IntType> constexpr Rational<IntType>::exp() const {
         return Rational<IntType>(
-                std::exp(double(m_numerator) / m_denominator)
+                std::exp(double(getNumerator()) / getDenominator())
         );
     }
 
@@ -928,18 +936,18 @@ namespace Arkulib {
     template<typename FloatingType>
     Rational<IntType> constexpr Rational<IntType>::pow(const FloatingType &k) const {
         return Rational<IntType>(
-                std::pow(double(m_numerator) / m_denominator, k)
+                std::pow(double(getNumerator()) / getDenominator(), k)
         );
     }
 
     template<typename IntType>
     Rational<IntType> constexpr Rational<IntType>::simplify() const noexcept {
-        const int gcd = std::gcd(m_numerator, m_denominator);
+        const int gcd = std::gcd(getNumerator(), getDenominator());
         assert(gcd != 0 && "GCD shouldn't be equal to 0");
 
         return Rational<IntType>(
-                m_numerator / gcd,
-                m_denominator / gcd,
+                getNumerator() / gcd,
+                getDenominator() / gcd,
                 false
         );
     }
@@ -950,8 +958,10 @@ namespace Arkulib {
 
     template<typename IntType>
     template<typename FloatingType>
-    Rational<IntType> constexpr
-    Rational<IntType>::fromFloatingPoint(const FloatingType floatingRatio, size_t iter) const {
+    Rational<IntType> constexpr Rational<IntType>::fromFloatingPoint(
+            const FloatingType floatingRatio,
+            size_t iter
+    ) {
         //ToDo: Throw une except si n ou d supérieur à max
         //ToDo: Trouver un moyen de pas utiliser de paramètres iter
         constexpr FloatingType ZERO = 0;
@@ -991,8 +1001,7 @@ namespace Arkulib {
     }
 
     template<typename IntType>
-    constexpr void
-    Rational<IntType>::verifyDenominator(
+    constexpr void Rational<IntType>::verifyDenominator(
             const IntType denominator,
             const bool checkIfDenominatorIsNull
     ) {
