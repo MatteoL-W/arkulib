@@ -14,6 +14,7 @@ namespace Arkulib::Exceptions {
      */
     class InvalidAccessArgument : public std::invalid_argument {
     public:
-        inline InvalidAccessArgument() : std::invalid_argument("The parameter must be 0 (numerator) or 1 (denominator).") {}
+        inline InvalidAccessArgument() : std::invalid_argument(
+                "The parameter must be 0 (numerator) or 1 (denominator).") {}
     };
 }

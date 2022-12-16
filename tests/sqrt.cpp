@@ -30,7 +30,8 @@ TEST (ArkulibSquareOperation, SquareTimeSquare) {
     Arkulib::Rational r2(2, 3);
 
     ASSERT_EQ (r1.sqrt() * r1.sqrt(), (r1 * r1).sqrt());
-    ASSERT_NEAR ((r1.sqrt() * r2.sqrt()).toRealNumber(), (r1 * r2).sqrt().toRealNumber(), 0.1); //ASSERT_EQ doesn't work because of a slight rounding error
+    ASSERT_NEAR ((r1.sqrt() * r2.sqrt()).toRealNumber(), (r1 * r2).sqrt().toRealNumber(),
+                 0.1); //ASSERT_EQ doesn't work because of a slight rounding error
 }
 
 TEST (ArkulibSquareOperation, BigRationals) {
