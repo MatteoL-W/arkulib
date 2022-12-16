@@ -164,8 +164,10 @@ namespace Arkulib {
          * @return The sum in Rational
          */
         template<typename NonRationalType>
-        inline friend Rational<IntType>
-        operator+(NonRationalType nonRational, const Rational<IntType> &rational) {
+        inline friend Rational<IntType> operator+(
+                NonRationalType nonRational,
+                const Rational<IntType> &rational
+        ) {
             return Rational<IntType>(nonRational) + rational;
         }
 
@@ -762,16 +764,8 @@ namespace Arkulib {
 
         constexpr inline void verifyDenominator(
                 const IntType denominator,
-                const bool willDenominatorBeVerified = true
-        ) {
-            if (denominator == static_cast<IntType>(0) && willDenominatorBeVerified)
-                throw Exceptions::DivideByZeroException();
-
-            if (denominator < static_cast<IntType>(0)) {
-                m_numerator = -m_numerator;
-                m_denominator = -denominator;
-            }
-        }
+                const bool checkIfDenominatorIsNull = true
+        );
 
         /**
          * @brief Verify if the operands are superior to the limit of IntType
@@ -787,7 +781,6 @@ namespace Arkulib {
 
     /************************************************************************************************************
      ************************************************************************************************************/
-
 
 
 
@@ -981,6 +974,10 @@ namespace Arkulib {
                + Rational<IntType>(integerPart, ONE);
     }
 
+    /************************************************************************************************************
+     ************************************************ METHODS DEF ***********************************************
+     ************************************************************************************************************/
+
     template<typename IntType>
     template<typename AnotherIntType>
     constexpr void Rational<IntType>::verifyNumberLargeness(
@@ -990,6 +987,22 @@ namespace Arkulib {
         if ((std::numeric_limits<IntType>::max() < anotherRational.getLargerOperand() ||
              std::numeric_limits<IntType>::lowest() > anotherRational.getLowerOperand())) {
             throw Exceptions::NumberTooLargeException();
+        }
+    }
+
+    template<typename IntType>
+    constexpr void
+    Rational<IntType>::verifyDenominator(
+            const IntType denominator,
+            const bool checkIfDenominatorIsNull
+    ) {
+        constexpr IntType ZERO = 0;
+        if (denominator == ZERO && checkIfDenominatorIsNull)
+            throw Exceptions::DivideByZeroException();
+
+        if (denominator < ZERO) {
+            m_numerator = -m_numerator;
+            m_denominator = -denominator;
         }
     }
 
