@@ -62,12 +62,12 @@ TEST (ArkulibConstructor, ConstructorsCoherency) {
 
 TEST (ArkulibConstructor, UnwantedTypes) {
     EXPECT_THROW({
-                     try {
-                         Arkulib::Rational<float> r1;
-                     }
-                     catch (const Arkulib::Exceptions::FloatTypeGivenException &e) {
-                         EXPECT_STREQ("The type given to a rational must not be a floating point.", e.what());
-                         throw;
-                     }
-                 }, Arkulib::Exceptions::FloatTypeGivenException);
+         try {
+             Arkulib::Rational<float> r1;
+         }
+         catch (const Arkulib::Exceptions::FloatTypeGivenException &e) {
+             EXPECT_STREQ("The type given to a rational must not be a floating point.", e.what());
+             throw;
+         }
+     }, Arkulib::Exceptions::FloatTypeGivenException);
 }

@@ -15,6 +15,7 @@
 
 #include "Exceptions/Exceptions.hpp"
 #include "Tools/Utils.hpp"
+#include "Constant.hpp"
 
 namespace Arkulib {
     /**
@@ -381,10 +382,7 @@ namespace Arkulib {
          * @return True if the first rational is inferior to the second
          */
         inline bool operator<(const Rational<IntType> &anotherRational) {
-            //ToDo Passer par autre chose qu'un double?
-            double firstRatio = (double) getNumerator() / getDenominator();
-            double secondRatio = (double) anotherRational.getNumerator() / anotherRational.getDenominator();
-            return (firstRatio < secondRatio);
+            return toRealNumber() < anotherRational.toRealNumber();
         }
 
         /**
@@ -418,10 +416,7 @@ namespace Arkulib {
          * @return True if the first rational is inferior to the second
          */
         inline bool operator<=(const Rational<IntType> &anotherRational) {
-            //ToDo Passer par autre chose qu'un double?
-            double firstRatio = (double) getNumerator() / getDenominator();
-            double secondRatio = (double) anotherRational.getNumerator() / anotherRational.getDenominator();
-            return (firstRatio <= secondRatio);
+            return toRealNumber() <= anotherRational.template toRealNumber();
         }
 
         /**
@@ -457,9 +452,7 @@ namespace Arkulib {
          * @return True if the first rational is inferior to the second
          */
         inline bool operator>(const Rational<IntType> &anotherRational) {
-            double firstRatio = (double) getNumerator() / getDenominator();
-            double secondRatio = (double) anotherRational.getNumerator() / anotherRational.getDenominator();
-            return (firstRatio > secondRatio);
+            return toRealNumber() > anotherRational.template toRealNumber();
         }
 
         /**
@@ -493,9 +486,7 @@ namespace Arkulib {
          * @return True if the first rational is inferior to the second
          */
         inline bool operator>=(const Rational<IntType> &anotherRational) {
-            double firstRatio = (double) getNumerator() / getDenominator();
-            double secondRatio = (double) anotherRational.getNumerator() / anotherRational.getDenominator();
-            return (firstRatio >= secondRatio);
+            return toRealNumber() >= anotherRational.template toRealNumber();
         }
 
         /**
@@ -704,14 +695,23 @@ namespace Arkulib {
          * @brief Return an approximation of +infinite in Rational Type
          * @return 1 as numerator and 0 as denominator
          */
-        [[maybe_unused]] inline constexpr static Rational<IntType>
-        Infinite() noexcept { return Rational<IntType>(1, 0, false, false); }
+        [[maybe_unused]] inline constexpr static Rational<IntType> Infinite() noexcept { return Rational<IntType>(1, 0, false, false); }
 
         /************************************************************************************************************
          *********************************************** CONVERSION *************************************************
          ************************************************************************************************************/
 
-        //ToDo Approximation
+        /**
+         * @brief Get an approximation of a given Rational. We assume that you don't ask a bigger precision that you don't have.
+         * @param digitsKept
+         * @return
+         */
+        [[nodiscard]] inline constexpr Rational<IntType> toApproximation(
+                const unsigned int digitsKept = Constant::DEFAULT_KEPT_DIGITS_APPROXIMATE
+        ) const {
+            if (digitsKept > Constant::DEFAULT_MAX_DIGITS_APPROXIMATE) throw Exceptions::DigitsTooLargeException();
+            return Rational<IntType>(Tools::roundToWantedPrecision(toRealNumber<double>(), std::pow(2,digitsKept)));
+        }
 
         /**
          * @brief Get the integer part of the ratio
@@ -747,9 +747,10 @@ namespace Arkulib {
          * @return The rational wanted
          */
         template<typename FloatingType = double>
-        [[nodiscard]] static constexpr Rational<IntType> fromFloatingPoint(FloatingType floatingRatio, size_t iter);
-
-        //ToDo: Peut-être une fonction qui permet de simplifier le rationnel ? Si c'est faisable, genre qui renvoie une approximation plus simple
+        [[nodiscard]] static constexpr Rational<IntType> fromFloatingPoint(
+                FloatingType floatingRatio,
+                size_t iter = Constant::DEFAULT_ITERATIONS_FROM_FP
+        );
 
     private:
         /************************************************************************************************************
@@ -818,7 +819,7 @@ namespace Arkulib {
     template<typename FloatingType>
     constexpr Rational<IntType>::Rational(const FloatingType &nonRational) {
         verifyTemplateType();
-        Rational<long long int> tmpRational = Rational<long long int>::fromFloatingPoint(nonRational, 10);
+        Rational<long long int> tmpRational = Rational<long long int>::fromFloatingPoint(nonRational);
 
         if (tmpRational.isZero() && Tools::roundToWantedPrecision(nonRational) != static_cast<FloatingType>(0)) {
             // Because Very large number return 0

@@ -36,14 +36,14 @@ TEST (ArkulibDivideOperation, RationalsAndZero) {
     ASSERT_TRUE (r1 / r2 == 0);
 
     EXPECT_THROW({
-                     try {
-                         r1 / r1;
-                     }
-                     catch (const Arkulib::Exceptions::DivideByZeroException &e) {
-                         EXPECT_STREQ("Denominator must not be null", e.what());
-                         throw;
-                     }
-                 }, Arkulib::Exceptions::DivideByZeroException);
+         try {
+             r1 / r1;
+         }
+         catch (const Arkulib::Exceptions::DivideByZeroException &e) {
+             EXPECT_STREQ("Denominator must not be null", e.what());
+             throw;
+         }
+     }, Arkulib::Exceptions::DivideByZeroException);
 }
 
 TEST (ArkulibDivideOperation, RationalsAndOne) {

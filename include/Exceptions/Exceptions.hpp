@@ -3,3 +3,4 @@
 #include "InvalidAccessArgumentException.hpp"
 #include "FloatTypeGivenException.hpp"
 #include "NumberTooLargeException.hpp"
+#include "DigitsTooLargeException.hpp"

@@ -23,12 +23,12 @@ TEST (ArkulibGetter, ErrorSetter) {
     Arkulib::Rational r1{0.75};
 
     EXPECT_THROW({
-                     try {
-                         r1[2] = 3;
-                     }
-                     catch (const Arkulib::Exceptions::InvalidAccessArgument &e) {
-                         EXPECT_STREQ("The parameter must be 0 (numerator) or 1 (denominator).", e.what());
-                         throw;
-                     }
-                 }, Arkulib::Exceptions::InvalidAccessArgument);
+        try {
+            r1[2] = 3;
+        }
+        catch (const Arkulib::Exceptions::InvalidAccessArgument &e) {
+            EXPECT_STREQ("The parameter must be 0 (numerator) or 1 (denominator).", e.what());
+            throw;
+        }
+    }, Arkulib::Exceptions::InvalidAccessArgument);
 }
