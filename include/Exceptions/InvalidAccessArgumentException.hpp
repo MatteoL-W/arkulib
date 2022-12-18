@@ -10,7 +10,7 @@
 
 namespace Arkulib::Exceptions {
     /**
-     * @brief An exception to handle call of sqrt() when the rational is negative
+     * @brief An exception to handle call of unwanted argument offset
      */
     class InvalidAccessArgument : public std::invalid_argument {
     public:

@@ -10,7 +10,7 @@
 
 namespace Arkulib::Exceptions {
     /**
-     * @brief An exception to handle a rational who can't be expressed by the given type
+     * @brief An exception to handle too large precision
      */
     class DigitsTooLargeException : public std::overflow_error {
     public:

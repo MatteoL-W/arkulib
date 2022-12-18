@@ -93,14 +93,14 @@ namespace Arkulib {
         /**
          * @return The numerator if numerator > denominator. Return denominator else.
          */
-        [[maybe_unused]] [[nodiscard]] constexpr inline IntType getLargerOperand() {
+        [[maybe_unused]] [[nodiscard]] constexpr inline IntType getLargerOperand() const noexcept {
             return std::max(getNumerator(), getDenominator());
         }
 
         /**
          * @return The denominator if numerator > denominator. Return numerator else.
          */
-        [[maybe_unused]] [[nodiscard]] constexpr inline IntType getLowerOperand() {
+        [[maybe_unused]] [[nodiscard]] constexpr inline IntType getLowerOperand() const noexcept {
             return std::min(getNumerator(), getDenominator());
         }
 
@@ -128,17 +128,17 @@ namespace Arkulib {
         /**
          * @return True if the rational is negative
          */
-        [[maybe_unused]] [[nodiscard]] inline bool isNegative() const { return getNumerator() < 0; };
+        [[maybe_unused]] [[nodiscard]] inline bool isNegative() const noexcept { return getNumerator() < 0; };
 
         /**
          * @return True if the rational is an integer
          */
-        [[maybe_unused]] [[nodiscard]] inline bool isInteger() const { return getDenominator() == 1; };
+        [[maybe_unused]] [[nodiscard]] inline bool isInteger() const noexcept { return getDenominator() == 1; };
 
         /**
          * @return True if the rational is equal to zero
          */
-        [[maybe_unused]] [[nodiscard]] inline bool isZero() const { return getNumerator() == 0; };
+        [[maybe_unused]] [[nodiscard]] inline bool isZero() const noexcept { return getNumerator() == 0; };
 
         /************************************************************************************************************
          *********************************************** OPERATOR + *************************************************
@@ -335,7 +335,6 @@ namespace Arkulib {
          ********************************************** OPERATOR != *************************************************
          ************************************************************************************************************/
 
-        //ToDo Test
         /**
          * @brief Different comparison between 2 rationals
          * @param anotherRational
@@ -704,14 +703,11 @@ namespace Arkulib {
         /**
          * @brief Get an approximation of a given Rational. We assume that you don't ask a bigger precision that you don't have.
          * @param digitsKept
-         * @return
+         * @return The approximated Ratio
          */
         [[nodiscard]] inline constexpr Rational<IntType> toApproximation(
-                const unsigned int digitsKept = Constant::DEFAULT_KEPT_DIGITS_APPROXIMATE
-        ) const {
-            if (digitsKept > Constant::DEFAULT_MAX_DIGITS_APPROXIMATE) throw Exceptions::DigitsTooLargeException();
-            return Rational<IntType>(Tools::roundToWantedPrecision(toRealNumber<double>(), std::pow(2,digitsKept)));
-        }
+                unsigned int digitsKept = Constant::DEFAULT_KEPT_DIGITS_APPROXIMATE
+        ) const;
 
         /**
          * @brief Get the integer part of the ratio
@@ -778,7 +774,7 @@ namespace Arkulib {
          * @param denominator
          * @param checkIfDenominatorIsNull
          */
-        constexpr inline void verifyDenominator(IntType denominator, bool checkIfDenominatorIsNull = true);
+        constexpr inline void verifyDenominator(IntType denominator, bool checkIfDenominatorIsNull = true) ;
 
         /**
          * @brief Verify if the operands are superior to the limit of IntType
@@ -786,7 +782,7 @@ namespace Arkulib {
          * @param anotherRational
          */
         template<typename AnotherIntType>
-        constexpr void verifyNumberLargeness(Rational<AnotherIntType> &anotherRational);
+        constexpr void verifyNumberLargeness(Rational<AnotherIntType> &anotherRational) const;
     };
 
 
@@ -909,8 +905,6 @@ namespace Arkulib {
      ************************************************ MATHS DEF *************************************************
      ************************************************************************************************************/
 
-    // ToDo : Do a take !
-    // Do we (keep the precision) or (simplify the operations in order to ease the operations)
     template<typename IntType>
     constexpr Rational<IntType> Rational<IntType>::sqrt() const {
         if (isNegative()) throw Exceptions::NegativeSqrtException();
@@ -935,7 +929,7 @@ namespace Arkulib {
 
     template<typename IntType>
     template<typename FloatingType>
-    Rational<IntType> constexpr Rational<IntType>::pow(const FloatingType &k) const {
+    constexpr Rational<IntType> Rational<IntType>::pow(const FloatingType &k) const {
         return Rational<IntType>(
                 std::pow(double(getNumerator()) / getDenominator(), k)
         );
@@ -963,8 +957,6 @@ namespace Arkulib {
             const FloatingType floatingRatio,
             size_t iter
     ) {
-        //ToDo: Throw une except si n ou d supérieur à max
-        //ToDo: Trouver un moyen de pas utiliser de paramètres iter
         constexpr FloatingType ZERO = 0;
         constexpr FloatingType ONE = 1;
 
@@ -993,7 +985,7 @@ namespace Arkulib {
     template<typename AnotherIntType>
     constexpr void Rational<IntType>::verifyNumberLargeness(
             Rational<AnotherIntType> &anotherRational
-    ) {
+    ) const {
         // If the value of the other rational is above the limits of IntType
         if ((std::numeric_limits<IntType>::max() < anotherRational.getLargerOperand() ||
              std::numeric_limits<IntType>::lowest() > anotherRational.getLowerOperand())) {
@@ -1014,6 +1006,12 @@ namespace Arkulib {
             m_numerator = -m_numerator;
             m_denominator = -denominator;
         }
+    }
+
+    template<typename IntType>
+    constexpr Rational<IntType> Rational<IntType>::toApproximation(const unsigned int digitsKept) const  {
+        if (digitsKept > Constant::DEFAULT_MAX_DIGITS_APPROXIMATE) throw Exceptions::DigitsTooLargeException();
+        return Rational<IntType>(Tools::roundToWantedPrecision(toRealNumber<double>(), std::pow(10,digitsKept)));
     }
 
     /************************************************************************************************************
