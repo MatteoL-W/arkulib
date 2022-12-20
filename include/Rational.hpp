@@ -15,7 +15,6 @@
 
 #include "Exceptions/Exceptions.hpp"
 #include "Tools/Utils.hpp"
-#include "Constant.hpp"
 
 namespace Arkulib {
     /**
@@ -108,9 +107,9 @@ namespace Arkulib {
          ************************************************ SETTERS ***************************************************
          ************************************************************************************************************/
 
-        inline void setNumerator(IntType numerator) { m_numerator = numerator; };
+        virtual inline void setNumerator(IntType numerator) { m_numerator = numerator; };
 
-        inline void setDenominator(IntType denominator) {
+        virtual inline void setDenominator(IntType denominator) {
             verifyDenominator(denominator);
             m_denominator = denominator;
         };
@@ -731,7 +730,7 @@ namespace Arkulib {
          * @brief Return ( _numerator_ / _denominator_ ) as a string
          * @return std::string
          */
-        [[nodiscard]] inline std::string toString() const noexcept {
+        [[nodiscard]] virtual inline std::string toString() const noexcept {
             return "(" + std::to_string(getNumerator()) + " / " + std::to_string(getDenominator()) + ")";
         }
 
@@ -748,7 +747,7 @@ namespace Arkulib {
                 size_t iter = Constant::DEFAULT_ITERATIONS_FROM_FP
         );
 
-    private:
+    protected:
         /************************************************************************************************************
          ********************************************* MEMBERS ******************************************************
          ************************************************************************************************************/
@@ -774,7 +773,7 @@ namespace Arkulib {
          * @param denominator
          * @param checkIfDenominatorIsNull
          */
-        constexpr inline void verifyDenominator(IntType denominator, bool checkIfDenominatorIsNull = true) ;
+        constexpr void verifyDenominator(IntType denominator, bool checkIfDenominatorIsNull = true);
 
         /**
          * @brief Verify if the operands are superior to the limit of IntType
@@ -964,10 +963,12 @@ namespace Arkulib {
             return -fromFloatingPoint(-floatingRatio, iter);
         }
 
+        //ToDO threshold
         if (floatingRatio <= ZERO + static_cast<FloatingType>(0.01) || iter == 0) {
             return Rational<IntType>::Zero();
         }
 
+        //ToDO ONE
         if (floatingRatio < static_cast<FloatingType>(1)) {
             return fromFloatingPoint(ONE / floatingRatio, iter).inverse();
         }
@@ -1023,3 +1024,5 @@ namespace Arkulib {
         return stream << rational.toString();
     }
 }
+
+//ToDo doc

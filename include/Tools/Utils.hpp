@@ -7,6 +7,8 @@
  */
 
 #include <cmath>
+#include <sstream>
+#include "Constant.hpp"
 
 namespace Arkulib::Tools {
     /**
@@ -19,5 +21,14 @@ namespace Arkulib::Tools {
     template <typename FloatingType = double>
     auto roundToWantedPrecision(const FloatingType value, const int precision = 10e4) {
         return std::round(value * precision) / precision;
+    }
+
+    template <typename Type>
+    std::string toStringWithPrecision(const Type value, const int precision = Arkulib::Constant::DEFAULT_COUT_ERATIONAL_DIGITS)
+    {
+        std::ostringstream out;
+        out.precision(precision);
+        out << std::fixed << value;
+        return out.str();
     }
 }
