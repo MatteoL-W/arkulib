@@ -23,6 +23,13 @@ namespace Arkulib::Tools {
         return std::round(value * precision) / precision;
     }
 
+    /**
+     * @brief Let the user set the precision while transforming a floating point to a string
+     * @tparam Type
+     * @param value
+     * @param precision
+     * @return A string
+     */
     template <typename Type>
     std::string toStringWithPrecision(const Type value, const int precision = Arkulib::Constant::DEFAULT_COUT_ERATIONAL_DIGITS)
     {

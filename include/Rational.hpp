@@ -39,6 +39,8 @@ namespace Arkulib {
          * @brief Classic constructor : create a rational from a numerator and a denominator (set default at 1)
          * @param numerator
          * @param denominator
+         * @param willBeReduce
+         * @param willDenominatorBeVerified
          */
         constexpr Rational(
                 IntType numerator,
@@ -74,6 +76,8 @@ namespace Arkulib {
          */
         inline ~Rational() = default;
 
+        //TODO variadics moyenne ?
+
         /************************************************************************************************************
          ************************************************ GETTERS ***************************************************
          ************************************************************************************************************/
@@ -107,9 +111,9 @@ namespace Arkulib {
          ************************************************ SETTERS ***************************************************
          ************************************************************************************************************/
 
-        virtual inline void setNumerator(IntType numerator) { m_numerator = numerator; };
+        inline void setNumerator(IntType numerator) { m_numerator = numerator; };
 
-        virtual inline void setDenominator(IntType denominator) {
+        inline void setDenominator(IntType denominator) {
             verifyDenominator(denominator);
             m_denominator = denominator;
         };
@@ -414,7 +418,7 @@ namespace Arkulib {
          * @return True if the first rational is inferior to the second
          */
         inline bool operator<=(const Rational<IntType> &anotherRational) {
-            return toRealNumber() <= anotherRational.template toRealNumber();
+            return toRealNumber() <= anotherRational.toRealNumber();
         }
 
         /**
@@ -450,7 +454,7 @@ namespace Arkulib {
          * @return True if the first rational is inferior to the second
          */
         inline bool operator>(const Rational<IntType> &anotherRational) {
-            return toRealNumber() > anotherRational.template toRealNumber();
+            return toRealNumber() > anotherRational.toRealNumber();
         }
 
         /**
@@ -484,7 +488,7 @@ namespace Arkulib {
          * @return True if the first rational is inferior to the second
          */
         inline bool operator>=(const Rational<IntType> &anotherRational) {
-            return toRealNumber() >= anotherRational.template toRealNumber();
+            return toRealNumber() >= anotherRational.toRealNumber();
         }
 
         /**
@@ -514,6 +518,8 @@ namespace Arkulib {
          *********************************************** OPERATOR += ************************************************
          ************************************************************************************************************/
 
+        //ToDo operator ++ --
+        //ToDo on aurait pu essayer d'utiliser une lib aussi
         /**
          * @brief Addition assignment operation between 2 rationals
          * @param anotherRational
@@ -730,7 +736,7 @@ namespace Arkulib {
          * @brief Return ( _numerator_ / _denominator_ ) as a string
          * @return std::string
          */
-        [[nodiscard]] virtual inline std::string toString() const noexcept {
+        [[nodiscard]] inline std::string toString() const noexcept {
             return "(" + std::to_string(getNumerator()) + " / " + std::to_string(getDenominator()) + ")";
         }
 
@@ -764,7 +770,7 @@ namespace Arkulib {
          * @brief Verify if the template is correct
          * @return an exception if the template is a floating point
          */
-        virtual inline void verifyTemplateType() const {
+        inline void verifyTemplateType() const {
             if (!std::is_integral<IntType>()) throw Exceptions::FloatTypeGivenException();
         };
 
