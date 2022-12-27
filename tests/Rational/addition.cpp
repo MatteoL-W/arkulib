@@ -3,10 +3,18 @@
 
 //ToDo Negatives tests
 
-TEST (ArkulibPlusOperation, Rationals) {
+TEST (ArkulibPlusOperation, Classic) {
     Arkulib::Rational r1(10, 7);
     Arkulib::Rational r2(7, 7);
     Arkulib::Rational r3(17, 7);
+
+    ASSERT_EQ (r1 + r2, r3);
+}
+
+TEST (ArkulibPlusOperation, Negative) {
+    Arkulib::Rational r1(10, 7);
+    Arkulib::Rational r2(-7, 7);
+    Arkulib::Rational r3(3, 7);
 
     ASSERT_EQ (r1 + r2, r3);
 }
@@ -67,6 +75,13 @@ TEST (ArkulibPlusOperation, AdditionAssignment) {
 TEST (ArkulibPlusOperation, AdditionAssignment2) {
     Arkulib::Rational r1(1, 4);
     r1 += 1;
+
+    ASSERT_EQ (r1, Arkulib::Rational(5, 4));
+}
+
+TEST (ArkulibPlusOperation, IncrementOperator) {
+    Arkulib::Rational r1(1, 4);
+    ++r1;
 
     ASSERT_EQ (r1, Arkulib::Rational(5, 4));
 }

@@ -2,7 +2,6 @@
 #include "../../include/Tools/ERationalVerif.hpp"
 
 TEST (ArkulibERationalSubtraction, Simple) {
-    //ToDo implement
     Arkulib::ERational r1{2.23, 11, 3.31, 7};
     Arkulib::ERational r2{4.11, 6, 7.08, 4};
     Arkulib::ERational r3 = r1 - r2;

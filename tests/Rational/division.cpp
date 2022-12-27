@@ -1,11 +1,18 @@
 #include <gtest/gtest.h>
 #include "../include/Rational.hpp"
 
-TEST (ArkulibDivideOperation, Rationals) {
+TEST (ArkulibDivideOperation, Classic) {
     Arkulib::Rational r1(1, 7);
     Arkulib::Rational r2(6, 13);
 
     ASSERT_EQ (r1 / r2, Arkulib::Rational(13, 42));
+}
+
+TEST (ArkulibDivideOperation, Negative) {
+    Arkulib::Rational r1(1, 7);
+    Arkulib::Rational r2(-6, 13);
+
+    ASSERT_EQ (r1 / r2, Arkulib::Rational(-13, 42));
 }
 
 TEST (ArkulibDivideOperation, ConsecutiveRationalsOperation) {

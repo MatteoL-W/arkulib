@@ -6,6 +6,8 @@
  * @copyright WTFPL
  */
 
+#pragma once
+
 #include <stdexcept>
 
 namespace Arkulib::Exceptions {

@@ -7,13 +7,15 @@
  * @copyright WTFPL
  */
 
+#pragma once
+
 #include "Rational.hpp"
 #include <iomanip>
 
 namespace Arkulib {
     /**
      * @brief This class can be used to express big rationals
-     * @tparam IntType
+     * @tparam FloatType
      */
     template<typename FloatType = double>
     class ERational {
@@ -64,7 +66,7 @@ namespace Arkulib {
          * @param reference
          */
         template<typename IntType>
-        [[maybe_unused]] inline constexpr explicit ERational(const Rational<IntType> &reference) {
+        inline constexpr explicit ERational(const Rational<IntType> &reference) {
             *this = ERational<FloatType>(reference.getNumerator(), reference.getDenominator());
         };
 
@@ -77,9 +79,9 @@ namespace Arkulib {
          */
         constexpr ERational(
                 FloatType numMultiplier,
-                int numExponent,
+                short int numExponent,
                 FloatType denMultiplier,
-                int denExponent
+                short int denExponent
         );
 
         /**
@@ -91,25 +93,25 @@ namespace Arkulib {
          ************************************************ GETTERS ***************************************************
          ************************************************************************************************************/
 
-        [[nodiscard]] virtual inline int getNumExponent() const noexcept { return m_numExponent; }
+        [[nodiscard]] constexpr inline int getNumExponent() const noexcept { return m_numExponent; }
 
-        [[nodiscard]] virtual inline FloatType getNumMultiplier() const noexcept { return m_numMultiplier; }
+        [[nodiscard]] constexpr inline FloatType getNumMultiplier() const noexcept { return m_numMultiplier; }
 
-        [[nodiscard]] virtual inline int getDenExponent() const noexcept { return m_denExponent; }
+        [[nodiscard]] constexpr inline int getDenExponent() const noexcept { return m_denExponent; }
 
-        [[nodiscard]] virtual inline FloatType getDenMultiplier() const noexcept { return m_denMultiplier; }
+        [[nodiscard]] constexpr inline FloatType getDenMultiplier() const noexcept { return m_denMultiplier; }
 
         /************************************************************************************************************
          ************************************************ SETTERS ***************************************************
          ************************************************************************************************************/
 
-        virtual inline void setNumExponent(int newNumExponent) noexcept { m_numExponent = newNumExponent; }
+        inline void setNumExponent(short int newNumExponent) noexcept { m_numExponent = newNumExponent; }
 
-        virtual inline void setNumMultiplier(FloatType newNumMultiplier) noexcept { m_numMultiplier = newNumMultiplier; }
+        inline void setNumMultiplier(FloatType newNumMultiplier) noexcept { m_numMultiplier = newNumMultiplier; }
 
-        virtual inline void setDenExponent(int newDenExponent) noexcept { m_denExponent = newDenExponent; }
+        [[maybe_unused]] inline void setDenExponent(short int newDenExponent) noexcept { m_denExponent = newDenExponent; }
 
-        virtual inline void setDenMultiplier(FloatType newDenMultiplier) noexcept { m_denMultiplier = newDenMultiplier; }
+        [[maybe_unused]] inline void setDenMultiplier(FloatType newDenMultiplier) noexcept { m_denMultiplier = newDenMultiplier; }
 
         /************************************************************************************************************
          *********************************************** OPERATOR + *************************************************
@@ -120,7 +122,7 @@ namespace Arkulib {
          * @param anotherERational
          * @return The sum in ERational
          */
-        ERational<FloatType> operator+(const ERational<FloatType> &anotherERational);
+        constexpr ERational<FloatType> operator+(const ERational<FloatType> &anotherERational) const;
 
         /************************************************************************************************************
          *********************************************** OPERATOR - *************************************************
@@ -131,7 +133,7 @@ namespace Arkulib {
          * @param anotherERational
          * @return The result in ERational
          */
-        ERational<FloatType> operator-(const ERational<FloatType> &anotherERational);
+        constexpr ERational<FloatType> operator-(const ERational<FloatType> &anotherERational) const;
 
         /************************************************************************************************************
          *********************************************** OPERATOR * *************************************************
@@ -142,7 +144,7 @@ namespace Arkulib {
          * @param anotherERational
          * @return The multiplication in ERational
          */
-        ERational<FloatType> operator*(const ERational<FloatType> &anotherERational);
+        constexpr ERational<FloatType> operator*(const ERational<FloatType> &anotherERational) const;
 
         /************************************************************************************************************
          *********************************************** OPERATOR / *************************************************
@@ -153,7 +155,7 @@ namespace Arkulib {
          * @param anotherERational
          * @return The result in ERational
          */
-        ERational<FloatType> operator/(const ERational<FloatType> &anotherERational);
+        constexpr ERational<FloatType> operator/(const ERational<FloatType> &anotherERational) const;
 
         /************************************************************************************************************
          *********************************************** OPERATOR == ************************************************
@@ -164,7 +166,7 @@ namespace Arkulib {
          * @param anotherRational
          * @return True if the first erational is equal to the second
          */
-        inline bool operator==(const ERational<FloatType> &anotherERational);
+        constexpr inline bool operator==(const ERational<FloatType> &anotherERational) const;
 
         /************************************************************************************************************
          ********************************************** OPERATOR != *************************************************
@@ -175,14 +177,51 @@ namespace Arkulib {
          * @param anotherRational
          * @return True if the first erational is different to the second
          */
-        inline bool operator!=(const ERational<FloatType> &anotherERational);
+        constexpr inline bool operator!=(const ERational<FloatType> &anotherERational) const;
+
+        /************************************************************************************************************
+         ************************************************* STATUS ***************************************************
+         ************************************************************************************************************/
+
+        /**
+         * @return True if the rational is negative
+         */
+        [[maybe_unused]] [[nodiscard]] inline bool isNegative() const noexcept {
+            return (getNumMultiplier() < 0. && getDenMultiplier() > 0.) || (getNumMultiplier() > 0. && getDenMultiplier() < 0.);
+        };
+
+        /**
+         * @return True if the rational is an integer
+         */
+        [[maybe_unused]] [[nodiscard]] inline bool isInteger() const noexcept { return getDenMultiplier() == 1.; };
+
+        /**
+         * @return True if the rational is equal to zero
+         */
+        [[maybe_unused]] [[nodiscard]] inline bool isZero() const noexcept { return getNumMultiplier() == 0.; };
 
         /************************************************************************************************************
          ************************************************** MATHS ***************************************************
          ************************************************************************************************************/
 
         /**
-         * @brief Simplify the Rational with GCD (called in constructor)
+         * @brief Apply absolute value on the ERational
+         * @return The ERational in absolute value
+         */
+        [[maybe_unused]] [[nodiscard]] constexpr inline ERational<FloatType> abs() const {
+            return ERational<FloatType>(std::abs(getNumMultiplier()), getNumExponent(), std::abs(getDenMultiplier()), getDenExponent());
+        };
+
+        /**
+         * @brief Get the inverse of an ERational
+         * @return The inversed ERational
+         */
+        [[maybe_unused]] [[nodiscard]] constexpr inline ERational<FloatType> inverse() const {
+            return ERational<FloatType>(getDenMultiplier(), getDenExponent(), getNumMultiplier(), getNumExponent());
+        }
+
+        /**
+         * @brief Simplify the Rational with GCD
          */
         [[maybe_unused]] constexpr ERational<FloatType> simplify() noexcept;
 
@@ -235,7 +274,7 @@ namespace Arkulib {
          * @brief Verify if the template is correct
          * @return an exception if the template is a floating point
          */
-        inline void verifyTemplateType() const {
+        constexpr inline void verifyTemplateType() const {
             if (std::is_integral<FloatType>()) throw Exceptions::IntTypeGivenException();
         };
 
@@ -245,21 +284,21 @@ namespace Arkulib {
          * @param firstERational
          * @param secondERational
          */
-        void setSameDenominatorAndExponent(
+        constexpr void setSameDenominatorAndExponent(
             const ERational<FloatType> &anotherERational,
             ERational<FloatType> &firstERational,
             ERational<FloatType> &secondERational
-        );
+        ) const;
 
         /************************************************************************************************************
          ************************************************** MEMBERS *************************************************
          ************************************************************************************************************/
 
         FloatType m_numMultiplier; /*!< The multiplier of the numerator */
-        int m_numExponent; /*!< The exponent of the numerator */
+        short int m_numExponent; /*!< The exponent of the numerator */
 
         FloatType m_denMultiplier; /*!< The multiplier of the denominator */
-        int m_denExponent; /*!< The exponent of the denominator */
+        short int m_denExponent; /*!< The exponent of the denominator */
     };
 
 
@@ -275,13 +314,9 @@ namespace Arkulib {
      ************************************************************************************************************/
 
     template<typename FloatType>
-    constexpr ERational<FloatType>::ERational() {
+    constexpr ERational<FloatType>::ERational()
+            : m_numExponent(0), m_numMultiplier(0.), m_denExponent(0), m_denMultiplier(1.) {
         this->verifyTemplateType();
-
-        m_numExponent = 0;
-        m_numMultiplier = 0.;
-        m_denExponent = 0;
-        m_denMultiplier = 1.;
     }
 
 
@@ -319,11 +354,7 @@ namespace Arkulib {
             throw Exceptions::NumberTooLargeException();
         }
 
-        ERational tmpERational{tmpRational.getNumerator(), tmpRational.getDenominator()};
-        m_denMultiplier = tmpERational.getDenMultiplier();
-        m_denExponent = tmpERational.getDenExponent();
-        m_numMultiplier = tmpERational.getNumMultiplier();
-        m_numExponent = tmpERational.getNumExponent();
+        *this = ERational{tmpRational};
     }
 
 
@@ -331,9 +362,9 @@ namespace Arkulib {
     template<typename FloatType>
     constexpr ERational<FloatType>::ERational(
             const FloatType numMultiplier,
-            const int numExponent,
+            const short int numExponent,
             const FloatType denMultiplier,
-            const int denExponent
+            const short int denExponent
     ) {
         m_numMultiplier = numMultiplier;
         m_numExponent = numExponent;
@@ -346,7 +377,7 @@ namespace Arkulib {
      ************************************************************************************************************/
 
     template<typename FloatType>
-    ERational<FloatType> ERational<FloatType>::operator+(const ERational<FloatType> &anotherERational) {
+    constexpr ERational<FloatType> ERational<FloatType>::operator+(const ERational<FloatType> &anotherERational) const {
         ERational<FloatType> firstERational;
         ERational<FloatType> secondERational;
         setSameDenominatorAndExponent(anotherERational, firstERational, secondERational);
@@ -366,7 +397,7 @@ namespace Arkulib {
  ************************************************************************************************************/
 
     template<typename FloatType>
-    ERational<FloatType> ERational<FloatType>::operator-(const ERational<FloatType> &anotherERational) {
+    constexpr ERational<FloatType> ERational<FloatType>::operator-(const ERational<FloatType> &anotherERational) const {
         ERational<FloatType> firstERational;
         ERational<FloatType> secondERational;
         setSameDenominatorAndExponent(anotherERational, firstERational, secondERational);
@@ -386,7 +417,7 @@ namespace Arkulib {
      ************************************************************************************************************/
 
     template<typename FloatType>
-    ERational<FloatType> ERational<FloatType>::operator*(const ERational<FloatType> &anotherERational) {
+    constexpr ERational<FloatType> ERational<FloatType>::operator*(const ERational<FloatType> &anotherERational) const {
         return ERational<FloatType>(
                 m_numMultiplier * anotherERational.getNumMultiplier(),// Num Multiplier
                 m_numExponent + anotherERational.getNumExponent(),    // Num Exponent
@@ -400,12 +431,12 @@ namespace Arkulib {
      ************************************************************************************************************/
 
     template<typename FloatType>
-    ERational<FloatType> ERational<FloatType>::operator/(const ERational<FloatType> &anotherERational) {
+    constexpr ERational<FloatType> ERational<FloatType>::operator/(const ERational<FloatType> &anotherERational) const {
         return ERational<FloatType>(
-                m_numMultiplier * anotherERational.getDenMultiplier(),// Num Multiplier
-                m_numExponent + anotherERational.getDenExponent(),    // Num Exponent
-                m_denMultiplier * anotherERational.getNumMultiplier(),    // Den Multiplier
-                m_denExponent + anotherERational.getNumExponent()    // Den Exponent
+                m_numMultiplier * anotherERational.getDenMultiplier(),
+                m_numExponent + anotherERational.getDenExponent(),
+                m_denMultiplier * anotherERational.getNumMultiplier(),
+                m_denExponent + anotherERational.getNumExponent()
         );
     }
 
@@ -414,7 +445,7 @@ namespace Arkulib {
      ************************************************************************************************************/
 
     template<typename FloatType>
-    bool ERational<FloatType>::operator==(const ERational<FloatType> &anotherERational) {
+    constexpr bool ERational<FloatType>::operator==(const ERational<FloatType> &anotherERational) const {
         ERational<FloatType> leftRational = this->simplify();
         ERational<FloatType> rightRational = anotherERational->simplify();
 
@@ -432,7 +463,7 @@ namespace Arkulib {
      ************************************************************************************************************/
 
     template<typename FloatType>
-    bool ERational<FloatType>::operator!=(const ERational<FloatType> &anotherERational) {
+    constexpr bool ERational<FloatType>::operator!=(const ERational<FloatType> &anotherERational) const {
         return (*this == anotherERational) == false;
     }
 
@@ -465,11 +496,11 @@ namespace Arkulib {
     template<typename FloatType>
     template<typename IntType>
     constexpr void ERational<FloatType>::transformToExperimental(const IntType numerator, const IntType denominator) {
-        const int numeratorLength = trunc(log10(numerator));
+        const int numeratorLength = Tools::getNumberLength(numerator);
         m_numExponent = numeratorLength;
         m_numMultiplier = numerator * std::pow(10, -numeratorLength);
 
-        const int denominatorLength = trunc(log10(denominator));
+        const int denominatorLength = Tools::getNumberLength(denominator);
         m_denExponent = denominatorLength;
         m_denMultiplier = denominator * std::pow(10, -denominatorLength);
     }
@@ -486,11 +517,11 @@ namespace Arkulib {
     }
 
     template<typename FloatType>
-    void ERational<FloatType>::setSameDenominatorAndExponent(
+    constexpr void ERational<FloatType>::setSameDenominatorAndExponent(
             const ERational<FloatType> &anotherERational,
             ERational<FloatType> &firstERational,
             ERational<FloatType> &secondERational
-    ) {
+    ) const {
         firstERational = *this * ERational(anotherERational.getDenMultiplier(),
                                            anotherERational.getDenExponent(),
                                            anotherERational.getDenMultiplier(),
@@ -518,6 +549,13 @@ namespace Arkulib {
      ************************************************* STD::COUT ************************************************
      ************************************************************************************************************/
 
+    /**
+     * @brief << operator override to allow std::cout
+     * @tparam FloatType
+     * @param stream
+     * @param rational
+     * @return The stream with the rational to string.
+     */
     template<typename FloatType>
     std::ostream &operator<<(std::ostream &stream, const ERational<FloatType> &rational) {
         return stream << rational.toString();

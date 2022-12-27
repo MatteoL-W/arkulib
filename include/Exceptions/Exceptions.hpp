@@ -6,6 +6,8 @@
  * @copyright WTFPL
  */
 
+#pragma once
+
 #include "DivideByZeroException.hpp"
 #include "NegativeSqrtException.hpp"
 #include "InvalidAccessArgumentException.hpp"

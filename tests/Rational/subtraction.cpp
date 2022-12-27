@@ -1,11 +1,18 @@
 #include <gtest/gtest.h>
 #include "../include/Rational.hpp"
 
-TEST (ArkulibMinusOperation, Rationals) {
+TEST (ArkulibMinusOperation, Classic) {
     Arkulib::Rational r1(4, 7);
     Arkulib::Rational r2(1, 6);
 
     ASSERT_EQ (r1 - r2, Arkulib::Rational(17, 42));
+}
+
+TEST (ArkulibMinusOperation, Negative) {
+    Arkulib::Rational r1(4, 7);
+    Arkulib::Rational r2(-1, 6);
+
+    ASSERT_EQ (r1 - r2, Arkulib::Rational(31, 42));
 }
 
 TEST (ArkulibMinusOperation, ConsecutiveRationalsOperation) {
@@ -53,7 +60,6 @@ TEST (ArkulibMinusOperation, BigRationals) {
     ASSERT_EQ (r1 - r2, Arkulib::Rational(2496750, 1999));
 }
 
-
 TEST (ArkulibMinusOperation, SubtractionAssignment) {
     Arkulib::Rational r1(1, 6);
     r1 -= Arkulib::Rational(4, 9);
@@ -63,7 +69,14 @@ TEST (ArkulibMinusOperation, SubtractionAssignment) {
 
 TEST (ArkulibMinusOperation, AdditionAssignment2) {
     Arkulib::Rational r1(6, 7);
-    r1 += 1;
+    r1 -= 1;
 
-    ASSERT_EQ (r1, Arkulib::Rational(13, 7));
+    ASSERT_EQ (r1, Arkulib::Rational(-1, 7));
+}
+
+TEST (ArkulibMinusOperation, DecrementOperator) {
+    Arkulib::Rational r1(6, 7);
+    --r1;
+
+    ASSERT_EQ (r1, Arkulib::Rational(-1, 7));
 }

@@ -7,6 +7,8 @@
  * @copyright WTFPL
  */
 
+#pragma once
+
 /**
  * @mainpage
  * @tableofcontents

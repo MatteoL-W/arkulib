@@ -7,6 +7,8 @@
  * @copyright WTFPL
  */
 
+#pragma once
+
 #include <cassert>
 #include <cmath>
 #include <fstream>
@@ -31,12 +33,12 @@ namespace Arkulib {
          ************************************************************************************************************/
 
         /**
-         * @brief Default constructor : instantiate an object without parameters.
+         * @brief Instantiate an object without parameters.
          */
         inline constexpr Rational() : m_numerator(0), m_denominator(1) { verifyTemplateType(); }
 
         /**
-         * @brief Classic constructor : create a rational from a numerator and a denominator (set default at 1)
+         * @brief Create a rational from a numerator and a denominator.
          * @param numerator
          * @param denominator
          * @param willBeReduce
@@ -58,7 +60,7 @@ namespace Arkulib {
         constexpr explicit Rational(const FloatingType &nonRational);
 
         /**
-         * @brief Copy constructor
+         * @brief Default copy constructor
          * @param reference
          */
         inline constexpr Rational(const Rational<IntType> &reference) = default;
@@ -76,15 +78,13 @@ namespace Arkulib {
          */
         inline ~Rational() = default;
 
-        //TODO variadics moyenne ?
-
         /************************************************************************************************************
          ************************************************ GETTERS ***************************************************
          ************************************************************************************************************/
 
-        [[nodiscard]] inline IntType getNumerator() const noexcept { return m_numerator; }
+        [[nodiscard]] constexpr inline IntType getNumerator() const noexcept { return m_numerator; }
 
-        [[nodiscard]] inline IntType getDenominator() const noexcept { return m_denominator; }
+        [[nodiscard]] constexpr inline IntType getDenominator() const noexcept { return m_denominator; }
 
         /**
          * @brief Getter with [] operator
@@ -111,15 +111,15 @@ namespace Arkulib {
          ************************************************ SETTERS ***************************************************
          ************************************************************************************************************/
 
-        inline void setNumerator(IntType numerator) { m_numerator = numerator; };
+        constexpr inline void setNumerator(IntType numerator) { m_numerator = numerator; };
 
-        inline void setDenominator(IntType denominator) {
+        constexpr inline void setDenominator(IntType denominator) {
             verifyDenominator(denominator);
             m_denominator = denominator;
         };
 
         /**
-         * @brief Setter with [] operator. Example: rational[0] = 1 and rational[1] = 2 => (1/2)
+         * @brief Setter with [] operator. Example: rational[0] = 1 and rational[1] = 2 //// total => (1/2)
          * @param id
          */
         inline IntType &operator[](const size_t &id);
@@ -152,7 +152,7 @@ namespace Arkulib {
          * @param anotherRational
          * @return The sum in Rational
          */
-        Rational<IntType> operator+(const Rational<IntType> &anotherRational);
+        constexpr Rational<IntType> operator+(const Rational<IntType> &anotherRational) const;
 
         /**
          * @brief Addition operation between a rational and another type. Example: Rational + int
@@ -161,7 +161,7 @@ namespace Arkulib {
          * @return The sum in Rational
          */
         template<typename NonRationalType>
-        inline Rational<IntType> operator+(const NonRationalType &nonRational) {
+        constexpr inline Rational<IntType> operator+(const NonRationalType &nonRational) const {
             return Rational<IntType>(nonRational) + *this;
         }
 
@@ -173,8 +173,8 @@ namespace Arkulib {
          * @return The sum in Rational
          */
         template<typename NonRationalType>
-        inline friend Rational<IntType> operator+(
-                NonRationalType nonRational,
+        constexpr inline friend Rational<IntType> operator+(
+                const NonRationalType nonRational,
                 const Rational<IntType> &rational
         ) {
             return Rational<IntType>(nonRational) + rational;
@@ -189,7 +189,7 @@ namespace Arkulib {
          * @param anotherRational
          * @return The subtraction in Rational
          */
-        Rational<IntType> operator-(const Rational<IntType> &anotherRational);
+        constexpr Rational<IntType> operator-(const Rational<IntType> &anotherRational) const;
 
         /**
          * @brief Subtraction operation between a rational and another type. Example: Rational - int
@@ -198,7 +198,7 @@ namespace Arkulib {
          * @return The subtraction in Rational
          */
         template<typename NonRationalType>
-        inline Rational<IntType> operator-(const NonRationalType &nonRational) {
+        constexpr inline Rational<IntType> operator-(const NonRationalType &nonRational) const {
             return *this - Rational<IntType>(nonRational);
         }
 
@@ -210,8 +210,10 @@ namespace Arkulib {
          * @return The subtraction in Rational
          */
         template<typename NonRationalType>
-        inline friend Rational<IntType>
-        operator-(NonRationalType nonRational, const Rational<IntType> &rational) {
+        constexpr inline friend Rational<IntType> operator-(
+                const NonRationalType nonRational,
+                const Rational<IntType> &rational
+        ) {
             return Rational<IntType>(nonRational) - rational;
         }
 
@@ -220,7 +222,7 @@ namespace Arkulib {
          * @param rational
          * @return The rational in negative
          */
-        inline friend Rational operator-(const Rational &rational) {
+        constexpr inline friend Rational operator-(const Rational &rational) {
             return Rational<IntType>(-rational.getNumerator(), rational.getDenominator());
         }
 
@@ -233,7 +235,7 @@ namespace Arkulib {
          * @param anotherRational
          * @return The multiplication in Rational
          */
-        Rational<IntType> operator*(const Rational<IntType> &anotherRational);
+        constexpr Rational<IntType> operator*(const Rational<IntType> &anotherRational) const;
 
         /**
          * @brief Multiplication operation between a rational and another type. Example: Rational * int
@@ -242,7 +244,7 @@ namespace Arkulib {
          * @return The multiplication in Rational
          */
         template<typename NonRationalType>
-        inline Rational<IntType> operator*(const NonRationalType &nonRational) {
+        constexpr inline Rational<IntType> operator*(const NonRationalType &nonRational) const {
             return *this * Rational<IntType>(nonRational);
         }
 
@@ -254,8 +256,10 @@ namespace Arkulib {
          * @return The multiplication in Rational
          */
         template<typename NonRationalType>
-        inline friend Rational<IntType>
-        operator*(NonRationalType nonRational, const Rational<IntType> &rational) {
+        constexpr inline friend Rational<IntType> operator*(
+                const NonRationalType nonRational,
+                const Rational<IntType> &rational
+        ) {
             return Rational<IntType>(nonRational) * rational;
         }
 
@@ -268,7 +272,7 @@ namespace Arkulib {
          * @param anotherRational
          * @return The division in Rational
          */
-        Rational<IntType> operator/(const Rational<IntType> &anotherRational);
+        constexpr Rational<IntType> operator/(const Rational<IntType> &anotherRational) const;
 
         /**
          * @brief Division operation between a rational and another type. Example: Rational / int
@@ -277,7 +281,7 @@ namespace Arkulib {
          * @return The division in Rational
          */
         template<typename NonRationalType>
-        inline Rational<IntType> operator/(const NonRationalType &nonRational) {
+        constexpr inline Rational<IntType> operator/(const NonRationalType &nonRational) const {
             return *this / Rational<IntType>(nonRational);
         }
 
@@ -289,8 +293,10 @@ namespace Arkulib {
          * @return The division in Rational
          */
         template<typename NonRationalType>
-        inline friend Rational<IntType>
-        operator/(NonRationalType nonRational, const Rational<IntType> &rational) {
+        constexpr inline friend Rational<IntType> operator/(
+                const NonRationalType nonRational,
+                const Rational<IntType> &rational
+        ) {
             return Rational<IntType>(nonRational) / rational;
         }
 
@@ -303,7 +309,7 @@ namespace Arkulib {
          * @param anotherRational
          * @return True if the first rational is equal to the second
          */
-        inline bool operator==(const Rational<IntType> &anotherRational) {
+        constexpr inline bool operator==(const Rational<IntType> &anotherRational) const {
             Rational<IntType> leftRational = simplify();
             Rational<IntType> rightRational = anotherRational.simplify();
 
@@ -318,7 +324,7 @@ namespace Arkulib {
          * @return True if the rational is equal to the second operand
          */
         template<typename NonRationalType>
-        inline bool operator==(const NonRationalType &nonRational) {
+        constexpr inline bool operator==(const NonRationalType &nonRational) const {
             return Rational<IntType>(nonRational) == *this;
         }
 
@@ -330,7 +336,10 @@ namespace Arkulib {
          * @return True if the non-rational is equal to the rational
          */
         template<typename NonRationalType>
-        inline friend bool operator==(NonRationalType nonRational, const Rational<IntType> &rational) {
+        constexpr inline friend bool operator==(
+                const NonRationalType nonRational,
+                const Rational<IntType> &rational
+        ) {
             return Rational<IntType>(nonRational) == rational;
         }
 
@@ -343,7 +352,7 @@ namespace Arkulib {
          * @param anotherRational
          * @return True if the first rational is different to the second
          */
-        inline bool operator!=(const Rational<IntType> &anotherRational) {
+        constexpr inline bool operator!=(const Rational<IntType> &anotherRational) const {
             Rational<IntType> leftRational = simplify();
             Rational<IntType> rightRational = anotherRational.simplify();
 
@@ -358,7 +367,7 @@ namespace Arkulib {
         * @return True if the rational is different to the second operand
         */
         template<typename NonRationalType>
-        inline bool operator!=(const NonRationalType &nonRational) {
+        constexpr inline bool operator!=(const NonRationalType &nonRational) const {
             return Rational<IntType>(nonRational) != *this;
         }
 
@@ -370,7 +379,10 @@ namespace Arkulib {
          * @return True if the non-rational is different to the rational
          */
         template<typename NonRationalType>
-        inline friend bool operator!=(NonRationalType nonRational, const Rational<IntType> &rational) {
+        constexpr inline friend bool operator!=(
+                const NonRationalType nonRational,
+                const Rational<IntType> &rational
+        ) {
             return Rational<IntType>(nonRational) != rational;
         }
 
@@ -383,7 +395,7 @@ namespace Arkulib {
          * @param anotherRational
          * @return True if the first rational is inferior to the second
          */
-        inline bool operator<(const Rational<IntType> &anotherRational) {
+        constexpr inline bool operator<(const Rational<IntType> &anotherRational) const {
             return toRealNumber() < anotherRational.toRealNumber();
         }
 
@@ -394,7 +406,7 @@ namespace Arkulib {
          * @return True if the rational is inferior to the second operand
          */
         template<typename NonRationalType>
-        inline bool operator<(const NonRationalType &nonRational) { return *this < Rational<IntType>(nonRational); }
+        constexpr inline bool operator<(const NonRationalType &nonRational) const { return *this < Rational<IntType>(nonRational); }
 
         /**
          * @brief < Comparison between a non-rational and a rational. Example: int < Rational
@@ -404,7 +416,10 @@ namespace Arkulib {
          * @return True if the non-rational is inferior to the rational
          */
         template<typename NonRationalType>
-        inline friend bool operator<(NonRationalType nonRational, const Rational<IntType> &rational) {
+        constexpr inline friend bool operator<(
+                const NonRationalType nonRational,
+                const Rational<IntType> &rational
+        ) {
             return Rational<IntType>(nonRational) < rational;
         }
 
@@ -417,7 +432,7 @@ namespace Arkulib {
          * @param anotherRational
          * @return True if the first rational is inferior to the second
          */
-        inline bool operator<=(const Rational<IntType> &anotherRational) {
+        constexpr inline bool operator<=(const Rational<IntType> &anotherRational) const {
             return toRealNumber() <= anotherRational.toRealNumber();
         }
 
@@ -428,7 +443,7 @@ namespace Arkulib {
          * @return True if the rational is inferior to the second operand
          */
         template<typename NonRationalType>
-        inline bool operator<=(const NonRationalType &nonRational) {
+        constexpr inline bool operator<=(const NonRationalType &nonRational) const {
             return *this <= Rational<IntType>(nonRational);
         }
 
@@ -440,7 +455,10 @@ namespace Arkulib {
          * @return True if the non-rational is inferior to the rational
          */
         template<typename NonRationalType>
-        inline friend bool operator<=(NonRationalType nonRational, const Rational<IntType> &rational) {
+        constexpr inline friend bool operator<=(
+                const NonRationalType nonRational,
+                const Rational<IntType> &rational
+        ) {
             return Rational<IntType>(nonRational) <= rational;
         }
 
@@ -453,7 +471,7 @@ namespace Arkulib {
          * @param anotherRational
          * @return True if the first rational is inferior to the second
          */
-        inline bool operator>(const Rational<IntType> &anotherRational) {
+        constexpr inline bool operator>(const Rational<IntType> &anotherRational) const {
             return toRealNumber() > anotherRational.toRealNumber();
         }
 
@@ -464,7 +482,9 @@ namespace Arkulib {
          * @return True if the rational is inferior to the second operand
          */
         template<typename NonRationalType>
-        inline bool operator>(const NonRationalType &nonRational) { return *this > Rational<IntType>(nonRational); }
+        constexpr inline bool operator>(const NonRationalType &nonRational) const {
+            return *this > Rational<IntType>(nonRational);
+        }
 
         /**
          * @brief < Comparison between a non-rational and a rational. Example: int > Rational
@@ -474,7 +494,10 @@ namespace Arkulib {
          * @return True if the non-rational is superior to the rational
          */
         template<typename NonRationalType>
-        inline friend bool operator>(NonRationalType nonRational, const Rational<IntType> &rational) {
+        constexpr inline friend bool operator>(
+                const NonRationalType nonRational,
+                const Rational<IntType> &rational
+        ) {
             return Rational<IntType>(nonRational) > rational;
         }
 
@@ -487,7 +510,7 @@ namespace Arkulib {
          * @param anotherRational
          * @return True if the first rational is inferior to the second
          */
-        inline bool operator>=(const Rational<IntType> &anotherRational) {
+        constexpr inline bool operator>=(const Rational<IntType> &anotherRational) const {
             return toRealNumber() >= anotherRational.toRealNumber();
         }
 
@@ -498,19 +521,22 @@ namespace Arkulib {
          * @return True if the rational is inferior to the second operand
          */
         template<typename NonRationalType>
-        inline bool operator>=(const NonRationalType &nonRational) {
+        constexpr inline bool operator>=(const NonRationalType &nonRational) const {
             return *this >= Rational<IntType>(nonRational);
         }
 
         /**
-         * @brief < Comparison between a non-rational and a rational. Example: int >= Rational
+         * @brief >= Comparison between a non-rational and a rational. Example: int >= Rational
          * @tparam NonRationalType
          * @param nonRational
          * @param rational
          * @return True if the non-rational is superior to the rational
          */
         template<typename NonRationalType>
-        inline friend bool operator>=(NonRationalType nonRational, const Rational<IntType> &rational) {
+        constexpr inline friend bool operator>=(
+                const NonRationalType nonRational,
+                const Rational<IntType> &rational
+        ) {
             return Rational<IntType>(nonRational) >= rational;
         }
 
@@ -518,14 +544,12 @@ namespace Arkulib {
          *********************************************** OPERATOR += ************************************************
          ************************************************************************************************************/
 
-        //ToDo operator ++ --
-        //ToDo on aurait pu essayer d'utiliser une lib aussi
         /**
          * @brief Addition assignment operation between 2 rationals
          * @param anotherRational
          * @return The sum assignment in Rational
          */
-        Rational<IntType> operator+=(const Rational<IntType> &anotherRational) {
+        constexpr Rational<IntType> operator+=(const Rational<IntType> &anotherRational) {
             *this = *this + anotherRational;
             return *this;
         }
@@ -537,10 +561,19 @@ namespace Arkulib {
          * @return The sum assigment in Rational
          */
         template<typename NonRationalType>
-        inline Rational<IntType> operator+=(const NonRationalType &nonRational) {
+        constexpr inline Rational<IntType> operator+=(const NonRationalType &nonRational) {
             *this = *this + Rational<IntType>(nonRational);
             return *this;
         }
+
+        /************************************************************************************************************
+         *********************************************** OPERATOR ++ ************************************************
+         ************************************************************************************************************/
+
+        /**
+         * @brief Increment operator
+         */
+         constexpr inline void operator++() { *this += 1; }
 
         /************************************************************************************************************
          *********************************************** OPERATOR -= ************************************************
@@ -551,7 +584,7 @@ namespace Arkulib {
          * @param anotherRational
          * @return The subtraction in Rational
          */
-        Rational<IntType> operator-=(const Rational<IntType> &anotherRational) {
+        constexpr Rational<IntType> operator-=(const Rational<IntType> &anotherRational) {
             *this = *this - anotherRational;
             return *this;
         }
@@ -563,10 +596,19 @@ namespace Arkulib {
          * @return The subtraction assigment in Rational
          */
         template<typename NonRationalType>
-        inline Rational<IntType> operator-=(const NonRationalType &nonRational) {
+        constexpr inline Rational<IntType> operator-=(const NonRationalType &nonRational) {
             *this = *this - Rational<IntType>(nonRational);
             return *this;
         }
+
+        /************************************************************************************************************
+         *********************************************** OPERATOR -- ************************************************
+         ************************************************************************************************************/
+
+        /**
+         * @brief Decrement operator
+         */
+        constexpr inline void operator--() { *this -= 1; }
 
         /************************************************************************************************************
          *********************************************** OPERATOR *= ************************************************
@@ -577,7 +619,7 @@ namespace Arkulib {
          * @param anotherRational
          * @return The multiplication in Rational
          */
-        Rational<IntType> operator*=(const Rational<IntType> &anotherRational) {
+        constexpr inline Rational<IntType> operator*=(const Rational<IntType> &anotherRational) {
             *this = *this * anotherRational;
             return *this;
         }
@@ -589,7 +631,7 @@ namespace Arkulib {
          * @return The multiplication assigment in Rational
          */
         template<typename NonRationalType>
-        inline Rational<IntType> operator*=(const NonRationalType &nonRational) {
+        constexpr inline Rational<IntType> operator*=(const NonRationalType &nonRational) {
             *this = *this * Rational<IntType>(nonRational);
             return *this;
         }
@@ -598,13 +640,12 @@ namespace Arkulib {
          *********************************************** OPERATOR /= ************************************************
          ************************************************************************************************************/
 
-
         /**
          * @brief Division assignment operation between 2 rationals
          * @param anotherRational
          * @return The division in Rational
          */
-        Rational<IntType> operator/=(const Rational<IntType> &anotherRational) {
+        constexpr inline Rational<IntType> operator/=(const Rational<IntType> &anotherRational) {
             *this = *this / anotherRational;
             return *this;
         }
@@ -616,7 +657,7 @@ namespace Arkulib {
          * @return The multiplication assigment in Rational
          */
         template<typename NonRationalType>
-        inline Rational<IntType> operator/=(const NonRationalType &nonRational) {
+        constexpr inline Rational<IntType> operator/=(const NonRationalType &nonRational) {
             *this = *this / Rational<IntType>(nonRational);
             return *this;
         }
@@ -674,6 +715,62 @@ namespace Arkulib {
         [[maybe_unused]] [[nodiscard]] constexpr Rational<IntType> simplify() const noexcept;
 
         /************************************************************************************************************
+         ************************************************* MINIMUM **************************************************
+         ************************************************************************************************************/
+
+        /**
+         * @brief Return the minimum between two rationals
+         * @param rational1
+         * @param rational2
+         * @return
+         */
+        [[maybe_unused]] [[nodiscard]] constexpr static Rational<IntType> min(
+            Rational<IntType> rational1,
+            Rational<IntType> rational2
+        ) noexcept;
+
+        /**
+         * @brief Variadic: Return the minimum between various rationals
+         * @tparam Args
+         * @param rational
+         * @param args
+         * @return
+         */
+        template<typename ...Args>
+        [[maybe_unused]] [[nodiscard]] constexpr static Rational<IntType> min(
+            Rational<IntType> rational,
+            Args... args
+        ) noexcept;
+
+        /************************************************************************************************************
+         ************************************************* MAXIMUM **************************************************
+         ************************************************************************************************************/
+
+        /**
+         * @brief Return the maximum between two rationals
+         * @param rational1
+         * @param rational2
+         * @return
+         */
+        [[maybe_unused]] [[nodiscard]] constexpr static Rational<IntType> max(
+                Rational<IntType> rational1,
+                Rational<IntType> rational2
+        ) noexcept;
+
+        /**
+         * @brief Variadic: Return the maximum between various rationals
+         * @tparam Args
+         * @param rational
+         * @param args
+         * @return
+         */
+        template<typename ...Args>
+        [[maybe_unused]] [[nodiscard]] constexpr static Rational<IntType> max(
+                Rational<IntType> rational,
+                Args... args
+        ) noexcept;
+
+        /************************************************************************************************************
          ************************************************* STATIC ***************************************************
          ************************************************************************************************************/
 
@@ -719,6 +816,7 @@ namespace Arkulib {
          * @return An int (type IntType)
          */
         [[nodiscard]] inline constexpr IntType toInteger() const noexcept {
+            assert(getDenominator() != 0 && "This denominator shouldn't never be equal to 0");
             return IntType(getNumerator() / getDenominator());
         }
 
@@ -729,6 +827,7 @@ namespace Arkulib {
          */
         template<typename FloatingType = float>
         [[nodiscard]] inline constexpr FloatingType toRealNumber() const noexcept {
+            assert(getDenominator() != 0 && "This denominator shouldn't never be equal to 0");
             return getNumerator() / FloatingType(getDenominator());
         }
 
@@ -752,6 +851,29 @@ namespace Arkulib {
                 FloatingType floatingRatio,
                 size_t iter = Constant::DEFAULT_ITERATIONS_FROM_FP
         );
+
+        /**
+         * @brief Print the value of a rational.
+         * @tparam IntType
+         * @param rational
+         */
+        [[maybe_unused]] inline constexpr void static print(const Rational<IntType> rational) noexcept {
+            std::cout << rational.toString() << std::endl << std::endl;
+        }
+
+        /**
+         * @brief Variadic: Print the values of various rationals.
+         * @tparam IntType
+         * @tparam Args
+         * @param rational
+         * @param args
+         */
+        template<typename... Args>
+        [[maybe_unused]] inline constexpr void static print(const Rational<IntType> rational, Args... args) noexcept {
+            std::cout << rational.toString() << std::endl;
+            print(args...);
+        }
+
 
     protected:
         /************************************************************************************************************
@@ -811,6 +933,7 @@ namespace Arkulib {
     ) : m_numerator(numerator), m_denominator(denominator) {
         verifyTemplateType();
         verifyDenominator(denominator, willDenominatorBeVerified);
+
         if (willBeReduce) *this = simplify();
     }
 
@@ -834,10 +957,9 @@ namespace Arkulib {
 
     template<typename IntType>
     template<typename AnotherIntType>
-    constexpr Rational<IntType>::Rational(Rational<AnotherIntType> &copiedRational) {
+    constexpr Rational<IntType>::Rational(Rational<AnotherIntType> &copiedRational)
+            : m_numerator(copiedRational.getNumerator()), m_denominator(copiedRational.getDenominator()){
         verifyNumberLargeness(copiedRational);
-        m_numerator = copiedRational.getNumerator();
-        m_denominator = copiedRational.getDenominator();
     }
 
     /************************************************************************************************************
@@ -863,7 +985,7 @@ namespace Arkulib {
      ************************************************************************************************************/
 
     template<typename IntType>
-    Rational<IntType> Rational<IntType>::operator+(const Rational<IntType> &anotherRational) {
+    constexpr Rational<IntType> Rational<IntType>::operator+(const Rational<IntType> &anotherRational) const {
         return Rational<IntType>(
                 getNumerator() * anotherRational.getDenominator() + getDenominator() * anotherRational.getNumerator(),
                 getDenominator() * anotherRational.getDenominator()
@@ -875,7 +997,7 @@ namespace Arkulib {
      ************************************************************************************************************/
 
     template<typename IntType>
-    Rational<IntType> Rational<IntType>::operator-(const Rational<IntType> &anotherRational) {
+    constexpr Rational<IntType> Rational<IntType>::operator-(const Rational<IntType> &anotherRational) const {
         return Rational<IntType>(
                 getNumerator() * anotherRational.getDenominator() - getDenominator() * anotherRational.getNumerator(),
                 getDenominator() * anotherRational.getDenominator()
@@ -887,7 +1009,7 @@ namespace Arkulib {
      ************************************************************************************************************/
 
     template<typename IntType>
-    Rational<IntType> Rational<IntType>::operator*(const Rational<IntType> &anotherRational) {
+    constexpr Rational<IntType> Rational<IntType>::operator*(const Rational<IntType> &anotherRational) const {
         return Rational<IntType>(
                 getNumerator() * anotherRational.getNumerator(),
                 getDenominator() * anotherRational.getDenominator()
@@ -899,7 +1021,7 @@ namespace Arkulib {
      ************************************************************************************************************/
 
     template<typename IntType>
-    Rational<IntType> Rational<IntType>::operator/(const Rational<IntType> &anotherRational) {
+    constexpr Rational<IntType> Rational<IntType>::operator/(const Rational<IntType> &anotherRational) const {
         return Rational<IntType>(
                 getNumerator() * anotherRational.getDenominator(),
                 getDenominator() * anotherRational.getNumerator()
@@ -914,21 +1036,21 @@ namespace Arkulib {
     constexpr Rational<IntType> Rational<IntType>::sqrt() const {
         if (isNegative()) throw Exceptions::NegativeSqrtException();
         return Rational<IntType>(
-                std::sqrt(double(getNumerator()) / getDenominator())
+                std::sqrt(static_cast<double>(getNumerator()) / getDenominator())
         );
     }
 
     template<typename IntType>
     Rational<IntType> constexpr Rational<IntType>::cos() const {
         return Rational<IntType>(
-                std::cos(double(getNumerator()) / getDenominator())
+                std::cos(static_cast<double>(getNumerator()) / getDenominator())
         );
     }
 
     template<typename IntType>
     Rational<IntType> constexpr Rational<IntType>::exp() const {
         return Rational<IntType>(
-                std::exp(double(getNumerator()) / getDenominator())
+                std::exp(static_cast<double>(getNumerator()) / getDenominator())
         );
     }
 
@@ -936,7 +1058,7 @@ namespace Arkulib {
     template<typename FloatingType>
     constexpr Rational<IntType> Rational<IntType>::pow(const FloatingType &k) const {
         return Rational<IntType>(
-                std::pow(double(getNumerator()) / getDenominator(), k)
+                std::pow(static_cast<double>(getNumerator()) / getDenominator(), k)
         );
     }
 
@@ -953,8 +1075,56 @@ namespace Arkulib {
     }
 
     /************************************************************************************************************
+     ************************************************ MINIMUM DEF ***********************************************
+     ************************************************************************************************************/
+
+    template<typename IntType>
+    constexpr Rational<IntType> Rational<IntType>::min(
+            const Rational<IntType> rational1,
+            const Rational<IntType> rational2
+    ) noexcept {
+        return rational1 < rational2 ? rational1 : rational2;
+    }
+
+    template<typename IntType>
+    template<typename... Args>
+    constexpr Rational<IntType> Rational<IntType>::min(
+            const Rational<IntType> rational,
+            Args... args
+    ) noexcept {
+        return min(rational, min(args...));
+    }
+
+    /************************************************************************************************************
+     ************************************************ MAXIMUM DEF ***********************************************
+     ************************************************************************************************************/
+
+    template<typename IntType>
+    constexpr Rational<IntType> Rational<IntType>::max(
+            const Rational<IntType> rational1,
+            const Rational<IntType> rational2
+    ) noexcept {
+        return rational1 < rational2 ? rational2 : rational1;
+    }
+
+    template<typename IntType>
+    template<typename... Args>
+    constexpr Rational<IntType> Rational<IntType>::max(
+            const Rational<IntType> rational,
+            Args... args
+    ) noexcept {
+        return max(rational, max(args...));
+    }
+
+    /************************************************************************************************************
      ********************************************** CONVERSION DEF **********************************************
      ************************************************************************************************************/
+
+    template<typename IntType>
+    constexpr Rational<IntType> Rational<IntType>::toApproximation(const unsigned int digitsKept) const  {
+        if (digitsKept > Constant::DEFAULT_MAX_DIGITS_APPROXIMATE) throw Exceptions::DigitsTooLargeException();
+        return Rational<IntType>(Tools::roundToWantedPrecision(toRealNumber<double>(), std::pow(10,digitsKept)));
+    }
 
     template<typename IntType>
     template<typename FloatingType>
@@ -969,17 +1139,16 @@ namespace Arkulib {
             return -fromFloatingPoint(-floatingRatio, iter);
         }
 
-        //ToDO threshold
-        if (floatingRatio <= ZERO + static_cast<FloatingType>(0.01) || iter == 0) {
+        if (floatingRatio <= static_cast<FloatingType>(Constant::DEFAULT_THRESHOLD_FROM_FP) || iter == 0) {
             return Rational<IntType>::Zero();
         }
 
-        //ToDO ONE
-        if (floatingRatio < static_cast<FloatingType>(1)) {
+        if (floatingRatio < ONE) {
+            assert(floatingRatio != 0 && "floatingRatio shouldn't never be equal to 0 here");
             return fromFloatingPoint(ONE / floatingRatio, iter).inverse();
         }
 
-        IntType integerPart = IntType(floatingRatio);
+        auto integerPart = static_cast<IntType>(floatingRatio);
         return fromFloatingPoint(floatingRatio - integerPart, iter - 1)
                + Rational<IntType>(integerPart, ONE);
     }
@@ -1015,20 +1184,20 @@ namespace Arkulib {
         }
     }
 
-    template<typename IntType>
-    constexpr Rational<IntType> Rational<IntType>::toApproximation(const unsigned int digitsKept) const  {
-        if (digitsKept > Constant::DEFAULT_MAX_DIGITS_APPROXIMATE) throw Exceptions::DigitsTooLargeException();
-        return Rational<IntType>(Tools::roundToWantedPrecision(toRealNumber<double>(), std::pow(10,digitsKept)));
-    }
-
     /************************************************************************************************************
      ******************************************* STD::COUT OVERRIDE *********************************************
      ************************************************************************************************************/
 
+    /**
+     * @brief << operator override to allow std::cout
+     * @tparam IntType
+     * @param stream
+     * @param rational
+     * @return The stream with the rational to string.
+     */
     template<typename IntType>
     std::ostream &operator<<(std::ostream &stream, const Rational<IntType> &rational) {
         return stream << rational.toString();
     }
 }
 
-//ToDo doc

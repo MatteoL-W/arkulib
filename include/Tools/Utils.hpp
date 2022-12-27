@@ -6,6 +6,8 @@
  * @copyright WTFPL
  */
 
+#pragma once
+
 #include <cmath>
 #include <sstream>
 #include "Constant.hpp"
@@ -31,11 +33,24 @@ namespace Arkulib::Tools {
      * @return A string
      */
     template <typename Type>
-    std::string toStringWithPrecision(const Type value, const int precision = Arkulib::Constant::DEFAULT_COUT_ERATIONAL_DIGITS)
-    {
+    std::string toStringWithPrecision(
+            const Type value,
+            const int precision = Arkulib::Constant::DEFAULT_COUT_ERATIONAL_DIGITS
+    ) {
         std::ostringstream out;
         out.precision(precision);
         out << std::fixed << value;
         return out.str();
+    }
+
+    /**
+     * @brief Get the length on a number
+     * @tparam Type
+     * @param value
+     * @return The length
+     */
+    template <typename Type>
+    int getNumberLength(const Type value) {
+        return trunc(log10(value));
     }
 }

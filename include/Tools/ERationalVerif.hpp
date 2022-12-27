@@ -1,10 +1,12 @@
 /**
- * @file      Utils.hpp
+ * @file      ERationalVerif.hpp
  * @author    Elise MASSA
  * @author    Mattéo LECLERCQ
  * @date      2022
  * @copyright WTFPL
  */
+
+#pragma once
 
 #include <cmath>
 #include <functional>
