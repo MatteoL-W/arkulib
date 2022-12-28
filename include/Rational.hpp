@@ -910,6 +910,21 @@ namespace Arkulib {
          */
         template<typename AnotherIntType>
         constexpr void verifyNumberLargeness(Rational<AnotherIntType> &anotherRational) const;
+
+        /**
+         * @brief Check for overflow before returning a value
+         * @param numerator
+         * @param denominator
+         * @return The rational if there is no error. If these is an overflow error, it'll throw an exception
+         */
+        constexpr static Rational<IntType> checkForOverflowThenReturn(
+                const long long int numerator,
+                const long long int denominator
+        ) {
+            Rational<long long int> errorChecker(numerator, denominator);
+            return Rational<IntType>(errorChecker);
+            // During the copy constructor, the method verifyLargeness will be executed.
+        }
     };
 
 
@@ -986,9 +1001,10 @@ namespace Arkulib {
 
     template<typename IntType>
     constexpr Rational<IntType> Rational<IntType>::operator+(const Rational<IntType> &anotherRational) const {
-        return Rational<IntType>(
-                getNumerator() * anotherRational.getDenominator() + getDenominator() * anotherRational.getNumerator(),
-                getDenominator() * anotherRational.getDenominator()
+        return Rational<IntType>::checkForOverflowThenReturn(
+                static_cast<long long int>(getNumerator()) * anotherRational.getDenominator() +
+                getDenominator() * anotherRational.getNumerator(),
+                static_cast<long long int>(getDenominator()) * anotherRational.getDenominator()
         );
     }
 
@@ -998,9 +1014,10 @@ namespace Arkulib {
 
     template<typename IntType>
     constexpr Rational<IntType> Rational<IntType>::operator-(const Rational<IntType> &anotherRational) const {
-        return Rational<IntType>(
-                getNumerator() * anotherRational.getDenominator() - getDenominator() * anotherRational.getNumerator(),
-                getDenominator() * anotherRational.getDenominator()
+        return Rational<IntType>::checkForOverflowThenReturn(
+                static_cast<long long int>(getNumerator()) * anotherRational.getDenominator() -
+                getDenominator() * anotherRational.getNumerator(),
+                static_cast<long long int>(getDenominator()) * anotherRational.getDenominator()
         );
     }
 
@@ -1010,9 +1027,9 @@ namespace Arkulib {
 
     template<typename IntType>
     constexpr Rational<IntType> Rational<IntType>::operator*(const Rational<IntType> &anotherRational) const {
-        return Rational<IntType>(
-                getNumerator() * anotherRational.getNumerator(),
-                getDenominator() * anotherRational.getDenominator()
+        return Rational<IntType>::checkForOverflowThenReturn(
+                static_cast<long long int>(getNumerator()) * anotherRational.getNumerator(),
+                static_cast<long long int>(getDenominator()) * anotherRational.getDenominator()
         );
     }
 
@@ -1022,9 +1039,9 @@ namespace Arkulib {
 
     template<typename IntType>
     constexpr Rational<IntType> Rational<IntType>::operator/(const Rational<IntType> &anotherRational) const {
-        return Rational<IntType>(
-                getNumerator() * anotherRational.getDenominator(),
-                getDenominator() * anotherRational.getNumerator()
+        return Rational<IntType>::checkForOverflowThenReturn(
+                static_cast<long long int>(getNumerator()) * anotherRational.getDenominator(),
+                static_cast<long long int>(getDenominator()) * anotherRational.getNumerator()
         );
     }
 
@@ -1167,6 +1184,7 @@ namespace Arkulib {
              std::numeric_limits<IntType>::lowest() > anotherRational.getLowerOperand())) {
             throw Exceptions::NumberTooLargeException();
         }
+        // We assume (sadly) that the user won't go beyond long long int max (so naive)
     }
 
     template<typename IntType>

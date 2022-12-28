@@ -60,6 +60,39 @@ TEST (ArkulibMinusOperation, BigRationals) {
     ASSERT_EQ (r1 - r2, Arkulib::Rational(2496750, 1999));
 }
 
+
+TEST (ArkulibMinusOperation, VeryBigRationals) {
+    Arkulib::Rational r1(INT_MAX, 2);
+    Arkulib::Rational r2(3000, 2999);
+
+    EXPECT_THROW({
+                     try {
+                         // This will be > than INT_MAX in numerator
+                         Arkulib::Rational r3 = r1 - r2;
+                     }
+                     catch (const Arkulib::Exceptions::NumberTooLargeException &e) {
+                         EXPECT_STREQ("The given integer type doesn't have the capacity to store the rational.", e.what());
+                         throw;
+                     }
+                 }, Arkulib::Exceptions::NumberTooLargeException);
+}
+
+TEST (ArkulibMinusOperation, VeryBigRationalsNegative) {
+    Arkulib::Rational r1(INT_MIN, 2);
+    Arkulib::Rational r2(-8, 2999);
+
+    EXPECT_THROW({
+                     try {
+                         // This will be > than INT_MAX in numerator
+                         Arkulib::Rational r3 = r1 - r2;
+                     }
+                     catch (const Arkulib::Exceptions::NumberTooLargeException &e) {
+                         EXPECT_STREQ("The given integer type doesn't have the capacity to store the rational.", e.what());
+                         throw;
+                     }
+                 }, Arkulib::Exceptions::NumberTooLargeException);
+}
+
 TEST (ArkulibMinusOperation, SubtractionAssignment) {
     Arkulib::Rational r1(1, 6);
     r1 -= Arkulib::Rational(4, 9);

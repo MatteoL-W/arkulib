@@ -53,6 +53,39 @@ TEST (ArkulibTimeOperation, BigRationals) {
     ASSERT_EQ (r1 * r2, Arkulib::Rational(221125, 2869));
 }
 
+
+TEST (ArkulibTimeOperation, VeryBigRationals) {
+    Arkulib::Rational r1(INT_MAX, 2);
+    Arkulib::Rational r2(3000, 2999);
+
+    EXPECT_THROW({
+                     try {
+                         // This will be > than INT_MAX in numerator
+                         Arkulib::Rational r3 = r1 * r2;
+                     }
+                     catch (const Arkulib::Exceptions::NumberTooLargeException &e) {
+                         EXPECT_STREQ("The given integer type doesn't have the capacity to store the rational.", e.what());
+                         throw;
+                     }
+                 }, Arkulib::Exceptions::NumberTooLargeException);
+}
+
+TEST (ArkulibTimeOperation, VeryBigRationalsNegative) {
+    Arkulib::Rational r1(INT_MIN, 2);
+    Arkulib::Rational r2(-8, 2999);
+
+    EXPECT_THROW({
+                     try {
+                         // This will be > than INT_MAX in numerator
+                         Arkulib::Rational r3 = r1 * r2;
+                     }
+                     catch (const Arkulib::Exceptions::NumberTooLargeException &e) {
+                         EXPECT_STREQ("The given integer type doesn't have the capacity to store the rational.", e.what());
+                         throw;
+                     }
+                 }, Arkulib::Exceptions::NumberTooLargeException);
+}
+
 TEST (ArkulibTimeOperation, MultiplicationAssignment) {
     Arkulib::Rational r1(2, 5);
     r1 *= Arkulib::Rational(11, 3);
