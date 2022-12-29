@@ -3,6 +3,7 @@
  * @author    Elise MASSA
  * @author    Mattéo LECLERCQ
  * @date      2022
+ * @brief     Customize the library by changing default values
  * @copyright WTFPL
  */
 

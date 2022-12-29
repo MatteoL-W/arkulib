@@ -14,34 +14,19 @@
  * @tableofcontents
  *
  * @image html hambob.png
- * @section Section1
- * C'est top 1
- * @section Section2
- * @subsection Section 2 - Sub 1
- * Wooow sub 1!
- * @subsection Section 2 - Sub 2
- * Wooow sub 2!
- * @li test 1
- * @li test 2
+ * @section Dependencies
+ * - CMake (at least version 3.11)
+ *  - Linux : sudo apt install cmake
+ *  - Mac : brew install cmake
+ *  - Windows : https://cmake.org/install
+ *
+ *
+ * - Doxygen
+ *  - Linux : sudo apt install doxygen
+ *  - Mac : brew install doxygen
+ *  - Windows : https://www.doxygen.nl/manual/install.html
+ *
+ * @section A Arkulib in your project
+ * An example of a project using the library can be found here : https://github.com/MatteoL-W/arkulib-project
+ *
  */
-// Doxygen menu
-/// \mainpage
-/// \image html hambob.png
-/// \tableofcontents
-/// \section instroduction_sec What for?
-/// VectorD is a super tool.
-/// \section install_bigsec How to install
-/// \subsection dependencies_sec Dependecies
-/// \li nothing
-/// \li nothing else
-/// \li Doxygen (if you want the documentation)
-/// \subsection install_sec Install with cmake (Linux)
-/// \li go to main dir
-/// \li mkdir build
-/// \li cd build
-/// \li cmake ..
-/// \li make
-/// \li make html
-/// \li The documentation is located in [path to build]/doc/doc-doxygen/html/index.html
-
-//ToDo

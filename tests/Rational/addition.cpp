@@ -1,8 +1,6 @@
 #include <gtest/gtest.h>
 #include "../include/Rational.hpp"
 
-//ToDo Negatives tests
-
 TEST (ArkulibPlusOperation, Classic) {
     Arkulib::Rational r1(10, 7);
     Arkulib::Rational r2(7, 7);

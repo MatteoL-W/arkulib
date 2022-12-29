@@ -1002,8 +1002,7 @@ namespace Arkulib {
     template<typename IntType>
     constexpr Rational<IntType> Rational<IntType>::operator+(const Rational<IntType> &anotherRational) const {
         return Rational<IntType>::checkForOverflowThenReturn(
-                static_cast<long long int>(getNumerator()) * anotherRational.getDenominator() +
-                getDenominator() * anotherRational.getNumerator(),
+                static_cast<long long int>(getNumerator()) * anotherRational.getDenominator() + getDenominator() * anotherRational.getNumerator(),
                 static_cast<long long int>(getDenominator()) * anotherRational.getDenominator()
         );
     }
@@ -1015,8 +1014,7 @@ namespace Arkulib {
     template<typename IntType>
     constexpr Rational<IntType> Rational<IntType>::operator-(const Rational<IntType> &anotherRational) const {
         return Rational<IntType>::checkForOverflowThenReturn(
-                static_cast<long long int>(getNumerator()) * anotherRational.getDenominator() -
-                getDenominator() * anotherRational.getNumerator(),
+                static_cast<long long int>(getNumerator()) * anotherRational.getDenominator() - getDenominator() * anotherRational.getNumerator(),
                 static_cast<long long int>(getDenominator()) * anotherRational.getDenominator()
         );
     }

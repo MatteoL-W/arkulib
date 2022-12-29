@@ -19,7 +19,7 @@ TEST (ArkulibCosineOperation, CosineAndPi) {
     ASSERT_TRUE (r1.cos() == -1);
 
     Arkulib::Rational r2 = r1 * Arkulib::Rational(1, 2);
-    ASSERT_NEAR (r2.cos().toRealNumber(), 0, 10e4);
+    ASSERT_NEAR (r2.cos().toRealNumber(), 0, 10e-8);
 }
 
 TEST (ArkulibCosineOperation, BigRationals) {
@@ -33,5 +33,5 @@ TEST (ArkulibCosineOperation, Linearisation) {
     Arkulib::Rational r2(3, 4);
     Arkulib::Rational linearisation = r1.cos() * r2.cos();
     Arkulib::Rational linearisationTest = Arkulib::Rational(1, 2) * ((r1 + r2).cos() + (r1 - r2).cos());
-    ASSERT_NEAR (linearisation.toRealNumber(), linearisationTest.toRealNumber(), 10e4);
+    ASSERT_NEAR (linearisation.toRealNumber(), linearisationTest.toRealNumber(), 10e-8);
 }
