@@ -78,10 +78,18 @@ namespace Arkulib {
          * @param denExponent
          */
         constexpr ERational(
-                FloatType numMultiplier,
-                short int numExponent,
-                FloatType denMultiplier,
-                short int denExponent
+                FloatType numMultiplier, short int numExponent,
+                FloatType denMultiplier, short int denExponent
+        );
+
+        /**
+         * @brief Explicit constructor with std::pair
+         * @param numerator
+         * @param denominator
+         */
+        constexpr ERational(
+                std::pair<FloatType, short int> numerator,
+                std::pair<FloatType, short int> denominator
         );
 
         /**
@@ -105,10 +113,12 @@ namespace Arkulib {
          ************************************************ SETTERS ***************************************************
          ************************************************************************************************************/
 
+        constexpr inline void setNumerator(std::pair<FloatType, short int> numerator) noexcept { m_numerator = numerator; }
         constexpr inline void setNumerator(FloatType newMultiplier, short int newExponent) noexcept { m_numerator = std::make_pair(newMultiplier, newExponent); }
         constexpr inline void setNumMultiplier(FloatType newNumMultiplier) noexcept { m_numerator.first = newNumMultiplier; }
         constexpr inline void setNumExponent(short int newNumExponent) noexcept { m_numerator.second = newNumExponent; }
 
+        constexpr inline void setDenominator(std::pair<FloatType, short int> denominator) noexcept { m_denominator = denominator; }
         constexpr inline void setDenominator(FloatType newMultiplier, short int newExponent) noexcept { m_denominator = std::make_pair(newMultiplier, newExponent); }
         constexpr inline void setDenMultiplier(FloatType newDenMultiplier) noexcept { m_denominator.first = newDenMultiplier; }
         constexpr inline void setDenExponent(short int newDenExponent) noexcept { m_denominator.second = newDenExponent; }
@@ -188,7 +198,7 @@ namespace Arkulib {
          */
         [[maybe_unused]] [[nodiscard]] inline bool isNegative() const noexcept {
             return (getNumMultiplier() < 0. && getDenMultiplier() > 0.)
-            || (getNumMultiplier() > 0. && getDenMultiplier() < 0.);
+                    || (getNumMultiplier() > 0. && getDenMultiplier() < 0.);
         };
 
         /**
@@ -210,7 +220,10 @@ namespace Arkulib {
          * @return The ERational in absolute value
          */
         [[maybe_unused]] [[nodiscard]] constexpr inline ERational<FloatType> abs() const {
-            return ERational<FloatType>(std::abs(getNumMultiplier()), getNumExponent(), std::abs(getDenMultiplier()), getDenExponent());
+            return ERational<FloatType>(
+                    std::abs(getNumMultiplier()), getNumExponent(),
+                    std::abs(getDenMultiplier()), getDenExponent()
+            );
         };
 
         /**
@@ -261,8 +274,17 @@ namespace Arkulib {
          * @param numerator
          * @param denominator
          */
-        template<typename IntType = long long int>
+        template<typename IntType = int>
         constexpr void transformToExperimental(IntType numerator, IntType denominator);
+
+        /**
+         * @brief Transform a numerator/denominator into a pair
+         * @tparam IntType
+         * @param operand
+         * @return
+         */
+        template<typename IntType = int>
+        static constexpr std::pair<FloatType, short int> transformOperandToPair(IntType operand);
 
         /**
          * @brief Verify if the denominator is null or negative
@@ -280,15 +302,25 @@ namespace Arkulib {
         };
 
         /**
-         * @brief Set firstERational and secondERational with the same denominator and the same numerator exponent
+         * @brief Set firstERational and secondERational with the same numerator exponent
+         * @param firstERational
+         * @param secondERational
+         */
+        constexpr void setAtSameExponent(
+            ERational<FloatType> &firstERational,
+            ERational<FloatType> &secondERational
+        ) const;
+
+        /**
+         * @brief Set firstERational and secondERational with the same denominator exponent
          * @param anotherERational
          * @param firstERational
          * @param secondERational
          */
-        constexpr void setSameDenominatorAndExponent(
-            const ERational<FloatType> &anotherERational,
-            ERational<FloatType> &firstERational,
-            ERational<FloatType> &secondERational
+        constexpr void setAtSameDenominator(
+            const ERational <FloatType> &anotherERational,
+            ERational <FloatType> &firstERational,
+            ERational <FloatType> &secondERational
         ) const;
 
         /************************************************************************************************************
@@ -298,7 +330,6 @@ namespace Arkulib {
         std::pair<FloatType, short int> m_numerator;
 
         std::pair<FloatType, short int> m_denominator;
-
         // We also could have create a struct for this pair to ease some methods
         // (for example, we could have isNegative() in the struct or even operators)
     };
@@ -317,7 +348,7 @@ namespace Arkulib {
 
     template<typename FloatType>
     constexpr ERational<FloatType>::ERational() : m_numerator(0., 0), m_denominator(1., 0) {
-        this->verifyTemplateType();
+        verifyTemplateType();
     }
 
 
@@ -328,33 +359,27 @@ namespace Arkulib {
             const IntType denominator,
             const bool willBeReduce,
             const bool willDenominatorBeVerified
-    ) {
-        this->verifyTemplateType();
+    )   : m_numerator(transformOperandToPair(numerator)),
+          m_denominator(transformOperandToPair(denominator))
+    {
+        verifyTemplateType();
+        verifyDenominator(willDenominatorBeVerified);
 
-        const int gcd = std::gcd(numerator, denominator);
-        assert(gcd != 0 && "GCD shouldn't be equal to 0");
+        if (willBeReduce) {
+            const int gcd = std::gcd(numerator, denominator);
+            assert(gcd != 0 && "GCD shouldn't be equal to 0");
 
-        if (willBeReduce) transformToExperimental(numerator / gcd, denominator / gcd);
-        else transformToExperimental(numerator, denominator);
-
-        this->verifyDenominator(willDenominatorBeVerified);
-
-        if (willBeReduce) *this = simplify();
+            transformToExperimental(numerator / gcd, denominator / gcd);
+            *this = simplify();
+        }
     }
-
-
 
     template<typename FloatType>
     template<typename AnotherFloatType>
     constexpr ERational<FloatType>::ERational(const AnotherFloatType &nonRational) {
-        this->verifyTemplateType();
+        verifyTemplateType();
 
         Rational<long long int> tmpRational = Rational<long long int>::fromFloatingPoint(nonRational);
-        if (tmpRational.isZero() && Tools::roundToWantedPrecision(nonRational) != static_cast<AnotherFloatType>(0)) {
-            // Because Very large number return 0
-            throw Exceptions::NumberTooLargeException();
-        }
-
         *this = ERational{tmpRational};
     }
 
@@ -371,23 +396,35 @@ namespace Arkulib {
         m_denominator = std::make_pair(denMultiplier, denExponent);
     }
 
+
+    template<typename FloatType>
+    constexpr ERational<FloatType>::ERational(
+            std::pair<FloatType, short int> numerator,
+            std::pair<FloatType, short int> denominator
+    ) {
+        m_numerator = numerator;
+        m_denominator = denominator;
+    }
+
     /************************************************************************************************************
      ********************************************* OPERATOR + DEF ***********************************************
      ************************************************************************************************************/
 
     template<typename FloatType>
     constexpr ERational<FloatType> ERational<FloatType>::operator+(const ERational<FloatType> &anotherERational) const {
+        // We create new Rational with the same denominator (we multiply them by denominator / denominator)
         ERational<FloatType> firstERational;
         ERational<FloatType> secondERational;
-        setSameDenominatorAndExponent(anotherERational, firstERational, secondERational);
+        setAtSameDenominator(anotherERational, firstERational, secondERational);
+        setAtSameExponent(firstERational, secondERational);
 
-        assert(firstERational.getNumExponent() == secondERational.getNumExponent()
-                && "The two numerator exponent should be equal");
+
         return ERational<FloatType>(
-                firstERational.getNumMultiplier() + secondERational.getNumMultiplier(),
-                firstERational.getNumExponent(),
-                firstERational.getDenMultiplier(),
-                firstERational.getDenExponent()
+                std::make_pair(
+                        firstERational.getNumMultiplier() + secondERational.getNumMultiplier(),
+                        firstERational.getNumExponent()
+                ),
+                firstERational.getDenominator()
         );
     }
 
@@ -397,17 +434,18 @@ namespace Arkulib {
 
     template<typename FloatType>
     constexpr ERational<FloatType> ERational<FloatType>::operator-(const ERational<FloatType> &anotherERational) const {
+        // We create new Rational with the same denominator (we multiply them by denominator / denominator)
         ERational<FloatType> firstERational;
         ERational<FloatType> secondERational;
-        setSameDenominatorAndExponent(anotherERational, firstERational, secondERational);
+        setAtSameDenominator(anotherERational, firstERational, secondERational);
+        setAtSameExponent(firstERational, secondERational);
 
-        assert(firstERational.getNumExponent() == secondERational.getNumExponent() &&
-               "The two numerator exponent should be equal");
         return ERational<FloatType>(
-                firstERational.getNumMultiplier() - secondERational.getNumMultiplier(),
-                firstERational.getNumExponent(),
-                firstERational.getDenMultiplier(),
-                firstERational.getDenExponent()
+                std::make_pair(
+                        firstERational.getNumMultiplier() - secondERational.getNumMultiplier(),
+                        firstERational.getNumExponent()
+                ),
+                firstERational.getDenominator()
         );
     }
 
@@ -495,11 +533,18 @@ namespace Arkulib {
     template<typename FloatType>
     template<typename IntType>
     constexpr void ERational<FloatType>::transformToExperimental(const IntType numerator, const IntType denominator) {
-        const int numeratorLength = Tools::getNumberLength(numerator);
-        setNumerator(numerator * std::pow(10, -numeratorLength), numeratorLength);
+        setNumerator(transformOperandToPair(numerator));
+        setDenominator(transformOperandToPair(denominator));
+    }
 
-        const int denominatorLength = Tools::getNumberLength(denominator);
-        setDenominator(denominator * std::pow(10, -denominatorLength), denominatorLength);
+    template<typename FloatType>
+    template<typename IntType>
+    constexpr std::pair<FloatType, short> ERational<FloatType>::transformOperandToPair(IntType operand) {
+        const int operandLength = Tools::getNumberLength(operand);
+        return std::make_pair(
+                operand * std::pow(10, -operandLength),
+                operandLength
+        );
     }
 
     template<typename FloatType>
@@ -514,32 +559,28 @@ namespace Arkulib {
     }
 
     template<typename FloatType>
-    constexpr void ERational<FloatType>::setSameDenominatorAndExponent(
-            const ERational<FloatType> &anotherERational,
+    constexpr void ERational<FloatType>::setAtSameExponent(
             ERational<FloatType> &firstERational,
             ERational<FloatType> &secondERational
     ) const {
-        firstERational = *this * ERational(anotherERational.getDenMultiplier(),
-                                           anotherERational.getDenExponent(),
-                                           anotherERational.getDenMultiplier(),
-                                           anotherERational.getDenExponent());
-
-        secondERational = (ERational) anotherERational * ERational(getDenMultiplier(),
-                                                                   getDenExponent(),
-                                                                   getDenMultiplier(),
-                                                                   getDenExponent());
-
         const int exponentDifference = firstERational.getNumExponent() - secondERational.getNumExponent();
+        secondERational.setNumMultiplier(secondERational.getNumMultiplier() / std::pow(10, exponentDifference));
+        secondERational.setNumExponent(secondERational.getNumExponent() + exponentDifference);
 
-        if (exponentDifference > 0) {
-            secondERational.setNumMultiplier(secondERational.getNumMultiplier() / std::pow(10, exponentDifference));
-            secondERational.setNumExponent(secondERational.getNumExponent() + exponentDifference);
-        }
+        assert(firstERational.getNumExponent() == secondERational.getNumExponent() &&
+               "The two numerator exponent should be equal");
+    }
 
-        if (exponentDifference < 0) {
-            firstERational.setNumMultiplier(firstERational.getNumMultiplier() / std::pow(10, -exponentDifference));
-            firstERational.setNumExponent(firstERational.getNumExponent() - exponentDifference);
-        }
+    template<typename FloatType>
+    constexpr void ERational<FloatType>::setAtSameDenominator(
+            const ERational <FloatType> &anotherERational,
+            ERational <FloatType> &firstERational,
+            ERational <FloatType> &secondERational
+    ) const {
+        firstERational= *this * ERational(anotherERational.getDenominator(), anotherERational.getDenominator());
+        secondERational= anotherERational * ERational(this->getDenominator(), this->getDenominator());
+        assert(firstERational.getDenominator() == secondERational.getDenominator() &&
+               "The two numerator exponent should be equal");
     }
 
     /************************************************************************************************************

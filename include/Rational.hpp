@@ -958,6 +958,7 @@ namespace Arkulib {
     template<typename FloatingType>
     constexpr Rational<IntType>::Rational(const FloatingType &nonRational) {
         verifyTemplateType();
+        // si c'est un integer on renvoie /1
         Rational<long long int> tmpRational = Rational<long long int>::fromFloatingPoint(nonRational);
 
         if (tmpRational.isZero() && Tools::roundToWantedPrecision(nonRational) != static_cast<FloatingType>(0)) {
