@@ -306,7 +306,7 @@ namespace Arkulib {
          * @param firstERational
          * @param secondERational
          */
-        constexpr void setAtSameExponent(
+        constexpr void setAtSameNumeratorExponent(
             ERational<FloatType> &firstERational,
             ERational<FloatType> &secondERational
         ) const;
@@ -318,7 +318,6 @@ namespace Arkulib {
          * @param secondERational
          */
         constexpr void setAtSameDenominator(
-            const ERational <FloatType> &anotherERational,
             ERational <FloatType> &firstERational,
             ERational <FloatType> &secondERational
         ) const;
@@ -413,11 +412,10 @@ namespace Arkulib {
     template<typename FloatType>
     constexpr ERational<FloatType> ERational<FloatType>::operator+(const ERational<FloatType> &anotherERational) const {
         // We create new Rational with the same denominator (we multiply them by denominator / denominator)
-        ERational<FloatType> firstERational;
-        ERational<FloatType> secondERational;
-        setAtSameDenominator(anotherERational, firstERational, secondERational);
-        setAtSameExponent(firstERational, secondERational);
-
+        ERational<FloatType> firstERational = *this;
+        ERational<FloatType> secondERational = anotherERational;
+        setAtSameDenominator(firstERational, secondERational);
+        setAtSameNumeratorExponent(firstERational, secondERational);
 
         return ERational<FloatType>(
                 std::make_pair(
@@ -435,10 +433,10 @@ namespace Arkulib {
     template<typename FloatType>
     constexpr ERational<FloatType> ERational<FloatType>::operator-(const ERational<FloatType> &anotherERational) const {
         // We create new Rational with the same denominator (we multiply them by denominator / denominator)
-        ERational<FloatType> firstERational;
-        ERational<FloatType> secondERational;
-        setAtSameDenominator(anotherERational, firstERational, secondERational);
-        setAtSameExponent(firstERational, secondERational);
+        ERational<FloatType> firstERational = *this;
+        ERational<FloatType> secondERational = anotherERational;
+        setAtSameDenominator(firstERational, secondERational);
+        setAtSameNumeratorExponent(firstERational, secondERational);
 
         return ERational<FloatType>(
                 std::make_pair(
@@ -559,7 +557,7 @@ namespace Arkulib {
     }
 
     template<typename FloatType>
-    constexpr void ERational<FloatType>::setAtSameExponent(
+    constexpr void ERational<FloatType>::setAtSameNumeratorExponent(
             ERational<FloatType> &firstERational,
             ERational<FloatType> &secondERational
     ) const {
@@ -568,19 +566,18 @@ namespace Arkulib {
         secondERational.setNumExponent(secondERational.getNumExponent() + exponentDifference);
 
         assert(firstERational.getNumExponent() == secondERational.getNumExponent() &&
-               "The two numerator exponent should be equal");
+               "The two numerator exponents should be equal");
     }
 
     template<typename FloatType>
     constexpr void ERational<FloatType>::setAtSameDenominator(
-            const ERational <FloatType> &anotherERational,
             ERational <FloatType> &firstERational,
             ERational <FloatType> &secondERational
     ) const {
-        firstERational= *this * ERational(anotherERational.getDenominator(), anotherERational.getDenominator());
-        secondERational= anotherERational * ERational(this->getDenominator(), this->getDenominator());
+        firstERational= firstERational * ERational(secondERational.getDenominator(), secondERational.getDenominator());
+        secondERational= secondERational * ERational(this->getDenominator(), this->getDenominator());
         assert(firstERational.getDenominator() == secondERational.getDenominator() &&
-               "The two numerator exponent should be equal");
+               "The two denominators should be equal");
     }
 
     /************************************************************************************************************

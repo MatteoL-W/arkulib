@@ -1,5 +1,6 @@
+#include <climits>
 #include <gtest/gtest.h>
-#include "../include/Rational.hpp"
+#include "../../include/Rational.hpp"
 
 TEST (ArkulibMinusOperation, Classic) {
     Arkulib::Rational r1(4, 7);

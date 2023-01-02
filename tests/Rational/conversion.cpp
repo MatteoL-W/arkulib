@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../include/Rational.hpp"
+#include "../../include/Rational.hpp"
 
 TEST (ArkulibConversion, ToApproximation) {
     Arkulib::Rational r1{319871312, 9788787};

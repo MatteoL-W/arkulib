@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../include/Rational.hpp"
+#include "../../include/Rational.hpp"
 
 TEST (ArkulibMinMax, Min) {
     Arkulib::Rational r0(1,4);

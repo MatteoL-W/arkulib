@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../include/Rational.hpp"
+#include "../../include/Rational.hpp"
 
 TEST (ArkulibPowOperation, Rationals) {
     Arkulib::Rational r1(2, 7);

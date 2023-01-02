@@ -10,7 +10,7 @@
 
 #include <cmath>
 #include <sstream>
-#include "Constant.hpp"
+#include "../Constant.hpp"
 
 namespace Arkulib::Tools {
     /**

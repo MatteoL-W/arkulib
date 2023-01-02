@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../include/Rational.hpp"
+#include "../../include/Rational.hpp"
 
 TEST (ArkulibCosineOperation, Rationals) {
     Arkulib::Rational r1 = Arkulib::Rational<int>::Pi() * Arkulib::Rational(1, 3);

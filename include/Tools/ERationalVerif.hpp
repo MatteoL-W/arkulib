@@ -10,7 +10,7 @@
 
 #include <cmath>
 #include <functional>
-#include "ERational.hpp"
+#include "../ERational.hpp"
 
 namespace Arkulib::Tools {
     template <typename OperatorType>

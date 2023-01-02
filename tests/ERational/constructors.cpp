@@ -10,7 +10,7 @@ TEST (ArkulibERationalConstructor, NumAndDen) {
     Arkulib::ERational r2{12, 24};
     ASSERT_EQ(r2.toRealNumber(), 0.5);
 
-    Arkulib::ERational r3{(long long int) 4342434324432, 314347483689};
+    Arkulib::ERational r3{(long long int) 4342434324432, (long long int) 314347483689};
     ASSERT_NEAR(r3.getNumMultiplier(), 4.342434324432, 10e-12);
     ASSERT_EQ(r3.getNumExponent(), 12);
 
@@ -18,7 +18,7 @@ TEST (ArkulibERationalConstructor, NumAndDen) {
     ASSERT_EQ(r3.getDenExponent(), 11);
 
     // We create the same rational as before but reduced this time.
-    Arkulib::ERational r4{(long long int) 4342434324432, 314347483689, true};
+    Arkulib::ERational r4{(long long int) 4342434324432, (long long int) 314347483689, true};
     ASSERT_NEAR(r4.toRealNumber(), r3.toRealNumber(), 10e-7);
     ASSERT_EQ(r4.getNumExponent(), 1);
     ASSERT_EQ(r4.getDenExponent(), 0);

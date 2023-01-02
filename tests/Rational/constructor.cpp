@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../include/Rational.hpp"
+#include "../../include/Rational.hpp"
 
 TEST (ArkulibConstructor, NumeratorAndDenominator) {
     Arkulib::Rational r1(10, 5);
