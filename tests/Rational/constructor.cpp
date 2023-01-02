@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../include/Rational.hpp"
+#include "../../include/Rational.hpp"
 
 TEST (ArkulibConstructor, NumeratorAndDenominator) {
     Arkulib::Rational r1(10, 5);
@@ -70,4 +70,31 @@ TEST (ArkulibConstructor, UnwantedTypes) {
              throw;
          }
      }, Arkulib::Exceptions::FloatTypeGivenException);
+}
+
+TEST (ArkulibConstructor, NumberTooLargeFromNonRational) {
+    EXPECT_THROW({
+         try {
+             // This will use > than INT_MAX in numerator
+             Arkulib::Rational r1(2147483647.5);
+         }
+         catch (const Arkulib::Exceptions::NumberTooLargeException &e) {
+             EXPECT_STREQ("The given integer type doesn't have the capacity to store the rational.", e.what());
+             throw;
+         }
+    }, Arkulib::Exceptions::NumberTooLargeException);
+}
+
+TEST (ArkulibConstructor, NumberTooLargeFromCopy) {
+    Arkulib::Rational<long long int> r1(2147483647.5);
+    EXPECT_THROW({
+         try {
+             // This will use > than INT_MAX in numerator
+             Arkulib::Rational<int> r2(r1);
+         }
+         catch (const Arkulib::Exceptions::NumberTooLargeException &e) {
+             EXPECT_STREQ("The given integer type doesn't have the capacity to store the rational.", e.what());
+             throw;
+         }
+    }, Arkulib::Exceptions::NumberTooLargeException);
 }

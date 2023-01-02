@@ -1,12 +1,19 @@
+#include <climits>
 #include <gtest/gtest.h>
-#include "../include/Rational.hpp"
+#include "../../include/Rational.hpp"
 
-//ToDo Negatives tests
-
-TEST (ArkulibPlusOperation, Rationals) {
+TEST (ArkulibPlusOperation, Classic) {
     Arkulib::Rational r1(10, 7);
     Arkulib::Rational r2(7, 7);
     Arkulib::Rational r3(17, 7);
+
+    ASSERT_EQ (r1 + r2, r3);
+}
+
+TEST (ArkulibPlusOperation, Negative) {
+    Arkulib::Rational r1(10, 7);
+    Arkulib::Rational r2(-7, 7);
+    Arkulib::Rational r3(3, 7);
 
     ASSERT_EQ (r1 + r2, r3);
 }
@@ -27,7 +34,7 @@ TEST (ArkulibPlusOperation, ConsecutiveRationalsOperation) {
     ASSERT_EQ (r5, Arkulib::Rational(68, 7));
 }
 
-TEST (ArkulibPlusOperation, RationalsThenSimplify) {
+TEST (ArkulibPlusOperation, RationalsThenSimplifyToOne) {
     Arkulib::Rational r1(1, 3);
     Arkulib::Rational r2(2, 3);
 
@@ -50,11 +57,42 @@ TEST (ArkulibPlusOperation, RationalsAndOne) {
 }
 
 TEST (ArkulibPlusOperation, BigRationals) {
-    //ToDo Refaire après qu'on ait fix le problème des grands rationnels
     Arkulib::Rational r1(1000, 3);
     Arkulib::Rational r2(3000, 2999);
 
     ASSERT_EQ (r1 + r2, Arkulib::Rational(3008000, 8997));
+}
+
+TEST (ArkulibPlusOperation, VeryBigRationals) {
+    Arkulib::Rational r1(INT_MAX, 2);
+    Arkulib::Rational r2(3000, 2999);
+
+    EXPECT_THROW({
+         try {
+             // This will be > than INT_MAX in numerator
+             Arkulib::Rational r3 = r1 + r2;
+         }
+         catch (const Arkulib::Exceptions::NumberTooLargeException &e) {
+             EXPECT_STREQ("The given integer type doesn't have the capacity to store the rational.", e.what());
+             throw;
+         }
+     }, Arkulib::Exceptions::NumberTooLargeException);
+}
+
+TEST (ArkulibPlusOperation, VeryBigRationalsNegative) {
+    Arkulib::Rational r1(INT_MIN, 2);
+    Arkulib::Rational r2(-8, 2999);
+
+    EXPECT_THROW({
+        try {
+         // This will be > than INT_MAX in numerator
+         Arkulib::Rational r3 = r1 + r2;
+        }
+        catch (const Arkulib::Exceptions::NumberTooLargeException &e) {
+         EXPECT_STREQ("The given integer type doesn't have the capacity to store the rational.", e.what());
+         throw;
+        }
+    }, Arkulib::Exceptions::NumberTooLargeException);
 }
 
 TEST (ArkulibPlusOperation, AdditionAssignment) {
@@ -67,6 +105,13 @@ TEST (ArkulibPlusOperation, AdditionAssignment) {
 TEST (ArkulibPlusOperation, AdditionAssignment2) {
     Arkulib::Rational r1(1, 4);
     r1 += 1;
+
+    ASSERT_EQ (r1, Arkulib::Rational(5, 4));
+}
+
+TEST (ArkulibPlusOperation, IncrementOperator) {
+    Arkulib::Rational r1(1, 4);
+    ++r1;
 
     ASSERT_EQ (r1, Arkulib::Rational(5, 4));
 }

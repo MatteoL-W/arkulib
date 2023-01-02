@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../include/Rational.hpp"
+#include "../../include/Rational.hpp"
 
 TEST (ArkulibExpOperation, RationalsOfOne) {
     Arkulib::Rational r1(1, 1);
@@ -35,7 +35,7 @@ TEST (ArkulibExpOperation, ExponentialTimeExponential) {
 
     Arkulib::Rational<long long int> r3 = r1.exp() * r2.exp();
     Arkulib::Rational<long long int> r4 = (r1 + r2).exp();
-    ASSERT_NEAR (r4.toRealNumber(), r3.toRealNumber(), 10e4);
+    ASSERT_NEAR (r4.toRealNumber(), r3.toRealNumber(), 10e-7);
 }
 
 
@@ -45,7 +45,7 @@ TEST (ArkulibExpOperation, ExponentialDivideExponential) {
 
     Arkulib::Rational r3 = r1.exp() / r2.exp();
     Arkulib::Rational r4 = (r1 - r2).exp();
-    ASSERT_NEAR (r4.toRealNumber(), r3.toRealNumber(), 10e4);
+    ASSERT_NEAR (r4.toRealNumber(), r3.toRealNumber(), 10e-7);
 }
 
 TEST (ArkulibExpOperation, ExponentialPowN) {
