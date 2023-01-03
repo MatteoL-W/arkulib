@@ -313,7 +313,6 @@ namespace Arkulib {
 
         /**
          * @brief Set firstERational and secondERational with the same denominator exponent
-         * @param anotherERational
          * @param firstERational
          * @param secondERational
          */

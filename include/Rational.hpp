@@ -892,7 +892,7 @@ namespace Arkulib {
          * @brief Verify if the template is correct
          * @return an exception if the template is a floating point
          */
-        inline void verifyTemplateType() const {
+        constexpr inline void verifyTemplateType() const {
             if (!std::is_integral<IntType>()) throw Exceptions::FloatTypeGivenException();
         };
 
@@ -917,7 +917,7 @@ namespace Arkulib {
          * @param denominator
          * @return The rational if there is no error. If these is an overflow error, it'll throw an exception
          */
-        constexpr static Rational<IntType> checkForOverflowThenReturn(
+        constexpr inline static Rational<IntType> checkForOverflowThenReturn(
                 const long long int numerator,
                 const long long int denominator
         ) {
@@ -958,15 +958,21 @@ namespace Arkulib {
     template<typename FloatingType>
     constexpr Rational<IntType>::Rational(const FloatingType &nonRational) {
         verifyTemplateType();
-        // si c'est un integer on renvoie /1
-        Rational<long long int> tmpRational = Rational<long long int>::fromFloatingPoint(nonRational);
 
-        if (tmpRational.isZero() && Tools::roundToWantedPrecision(nonRational) != static_cast<FloatingType>(0)) {
-            // Because Very large number return 0
-            throw Exceptions::NumberTooLargeException();
+        if (std::is_integral<FloatingType>()) {
+            *this = Rational<IntType>(nonRational, 1);
         }
 
-        *this = Rational<IntType>(tmpRational);
+        else {
+            Rational<long long int> tmpRational = Rational<long long int>::fromFloatingPoint(nonRational);
+
+            if (tmpRational.isZero() && Tools::roundToWantedPrecision(nonRational) != static_cast<FloatingType>(0)) {
+                // Because Very large number return 0
+                throw Exceptions::NumberTooLargeException();
+            }
+
+            *this = Rational<IntType>(tmpRational);
+        }
     }
 
     /************************************************************************************************************/
