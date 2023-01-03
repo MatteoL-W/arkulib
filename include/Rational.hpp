@@ -889,8 +889,7 @@ namespace Arkulib {
          ************************************************************************************************************/
 
         /**
-         * @brief Verify if the template is correct
-         * @return an exception if the template is a floating point
+         * @brief Verify if the template is correct. Throw an exception if the template is a floating point.
          */
         constexpr inline void verifyTemplateType() const {
             if (!std::is_integral<IntType>()) throw Exceptions::FloatTypeGivenException();

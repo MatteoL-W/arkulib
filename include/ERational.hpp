@@ -171,11 +171,11 @@ namespace Arkulib {
          *********************************************** OPERATOR == ************************************************
          ************************************************************************************************************/
 
-        /**
-         * @brief Comparison between 2 ERationals
-         * @param anotherRational
-         * @return True if the first erational is equal to the second
-         */
+          /**
+           * @brief Comparison between 2 ERationals
+           * @param anotherERational
+           * @return True if the first erational is equal to the second
+           */
         constexpr inline bool operator==(const ERational<FloatType> &anotherERational) const;
 
         /************************************************************************************************************
@@ -184,7 +184,7 @@ namespace Arkulib {
 
         /**
          * @brief Different comparison between 2 erationals
-         * @param anotherRational
+         * @param anotherERational
          * @return True if the first erational is different to the second
          */
         constexpr inline bool operator!=(const ERational<FloatType> &anotherERational) const;
@@ -288,14 +288,12 @@ namespace Arkulib {
 
         /**
          * @brief Verify if the denominator is null or negative
-         * @param denominator
          * @param checkIfDenominatorIsNull
          */
         constexpr void verifyDenominator(bool checkIfDenominatorIsNull = true);
 
         /**
-         * @brief Verify if the template is correct
-         * @return an exception if the template is a floating point
+         * @brief Verify if the template is correct. Throw an exception if the template is an integral
          */
         constexpr inline void verifyTemplateType() const {
             if (std::is_integral<FloatType>()) throw Exceptions::IntTypeGivenException();
